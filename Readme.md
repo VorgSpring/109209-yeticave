@@ -1,7 +1,7 @@
 # Личный проект «YetiCave» 
 
 * Студент: [Сергей Павлов](https://up.htmlacademy.ru/php/1/user/109209).
-* Наставник: `Неизвестно`.
+* Наставник: [Максим Васильев](https://htmlacademy.ru/profile/id416573).
 
 ---
 
