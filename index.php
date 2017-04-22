@@ -13,9 +13,11 @@ $remaining_time = $tomorrow - $now;
 
 // оставшееся часы
 $hours = floor($remaining_time / 3600);
+$hours = $hours > 10 ? $hours : '0'.$hours;
 
 // оставшееся минуты
 $seconds = floor($remaining_time % 3600 / 60);
+$seconds = $seconds > 10 ? $seconds : '0'.$seconds;
 
 // оставшееся время в формате (ЧЧ:ММ)
 $lot_time_remaining = $hours.":".$seconds;
