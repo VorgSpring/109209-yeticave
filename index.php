@@ -2,17 +2,17 @@
 // устанавливаем часовой пояс в Московское время
 date_default_timezone_set('Europe/Moscow');
 
-// записать в эту переменную оставшееся время в этом формате (ЧЧ:ММ)
-$lot_time_remaining = "00:00";
-
 // временная метка для полночи следующего дня
 $tomorrow = strtotime('tomorrow midnight');
 
 // временная метка для настоящего времени
 $now = time();
 
-// далее нужно вычислить оставшееся время до начала следующих суток и записать его в переменную $lot_time_remaining
-// ...
+// оставшееся время
+$remaining_time = $tomorrow - $now;
+
+// оставшееся время в формате (ЧЧ:ММ)
+$lot_time_remaining = gmdate('H: i', $remaining_time);
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -94,7 +94,7 @@ $now = time();
                             <span class="lot__cost">10 999<b class="rub">р</b></span>
                         </div>
                         <div class="lot__timer timer">
-                            <?=$lot_time_remaining;?>
+                            <?= $lot_time_remaining; ?>
                         </div>
                     </div>
                 </div>
