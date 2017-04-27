@@ -118,35 +118,32 @@ $data_ads = [
             <h2>Открытые лоты</h2>
             <select class="lots__select">
                 <option>Все категории</option>
-                <?php
-                    foreach ($product_category as $item) {
-                        echo "<option>$item</option>";
-                    }
-                ?>
+                <?php foreach ($product_category as $item): ?>
+                    <option><?= $item ?></option>
+                 <?php endforeach; ?>
             </select>
         </div>
         <ul class="lots__list">
-            <?php foreach ($data_ads as $item) {
-                echo "<li class='lots__item lot'>
-                        <div class='lot__image'>
-                            <img src=$item[image_url] width='350' height='260' alt='фото товара'>
-                        </div>
-                        <div class='lot__info'>
-                            <span class='lot__category'>$item[category]</span>
-                            <h3 class='lot__title'><a class='text-link' href=''>$item[name]</a></h3>
-                            <div class='lot__state'>
-                                <div class='lot__rate'>
-                                    <span class='lot__amount'>Стартовая цена</span>
-                                    <span class='lot__cost'>$item[price]<b class='rub'>р</b></span>
-                                </div>
-                                <div class='lot__timer timer'>
-                                    $lot_time_remaining
-                                </div>
+            <?php foreach ($data_ads as $item): ?>
+                <li class='lots__item lot'>
+                    <div class='lot__image'>
+                        <img src="<?= $item['image_url'] ?>" width='350' height='260' alt='фото товара'>
+                    </div>
+                    <div class='lot__info'>
+                        <span class='lot__category'><?= $item['category'] ?></span>
+                        <h3 class='lot__title'><a class='text-link' href=''><?= $item['name'] ?></a></h3>
+                        <div class='lot__state'>
+                            <div class='lot__rate'>
+                                <span class='lot__amount'>Стартовая цена</span>
+                                <span class='lot__cost'><?= $item['price'] ?><b class='rub'>р</b></span>
+                            </div>
+                            <div class='lot__timer timer'>
+                                <?=  $lot_time_remaining ?>
                             </div>
                         </div>
-                    </li>";
-                }
-            ?>
+                    </div>
+                </li>
+            <?php endforeach; ?>
         </ul>
     </section>
 </main>
