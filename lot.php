@@ -8,17 +8,24 @@ $bets = [
     ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')]
 ];
 
-/**
- * Колличество минут в часе
- * @type string
- */
-const MINUTES_OF_HOURS = 60;
 
 /**
- * Колличество секунд в часе
- * @type string
+ * Количество часов в одном дне
+ * @type integer
  */
-const SECONDS_OF_HOURS = 3600;
+const HOURS_IN_DAY = 24;
+
+/**
+ * Количество минут в одном часе
+ * @type integer
+ */
+const MINUTES_IN_HOUR = 60;
+
+/**
+ * Количество секунд в одном часе
+ * @type integer
+ */
+const SECONDS_IN_HOUR = 3600;
 
 /**
  * Возвращает время в относительном формате
@@ -28,12 +35,12 @@ const SECONDS_OF_HOURS = 3600;
 function formatTime($time) {
     $now = time();
 
-    $interval = ($now - $time) / SECONDS_OF_HOURS;
+    $interval = ($now - $time) / SECONDS_IN_HOUR;
 
-    if($interval > 24) {
+    if($interval > HOURS_IN_DAY) {
         return date('"d.m.y" в H:i', $time);
     } else if($interval < 1) {
-        return ($interval * MINUTES_OF_HOURS) . ' минут назад';
+        return ($interval * MINUTES_IN_HOUR) . ' минут назад';
     } else {
         return $interval . ' часов назад';
     }
