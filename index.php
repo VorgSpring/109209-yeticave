@@ -73,13 +73,13 @@ $data = [
 <body>
 
 <!-- header -->
-<?= includeTemplate('templates/header.php', []) ?>
+<?= includeTemplate('templates/header.php') ?>
 
 <!-- main -->
 <?= includeTemplate('templates/main.php', $data) ?>
 
 <!-- footer -->
-<?= includeTemplate('templates/footer.php', []) ?>
+<?= includeTemplate('templates/footer.php') ?>
 
 </body>
 </html>

@@ -2,11 +2,11 @@
 
 /**
  * Функция подключения шаблонов
- * @param {String}$path
- * @param {Array}$data
+ * @param {String} $path
+ * @param {Array} $data
  * @return string
  */
-function includeTemplate($path, $data) {
+function includeTemplate($path, $data = []) {
     if (!file_exists($path)) {
         return '';
     }
