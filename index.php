@@ -1,20 +1,6 @@
 <?php
 // функция подключения шаблонов
 require_once 'functions.php';
-// устанавливаем часовой пояс в Московское время
-date_default_timezone_set('Europe/Moscow');
-
-// временная метка для полночи следующего дня
-$tomorrow = strtotime('tomorrow midnight');
-
-// временная метка для настоящего времени
-$now = time();
-
-// оставшееся время
-$remaining_time = $tomorrow - $now;
-
-// оставшееся время в формате (ЧЧ:ММ)
-$lot_time_remaining = gmdate('H: i', $remaining_time);
 
 // категории товаров
 $product_category = ['Доски и лыжи', 'Крепления', 'Ботинки', 'Одежда', 'Инструменты', 'Разное'];
@@ -23,7 +9,8 @@ $product_category = ['Доски и лыжи', 'Крепления', 'Ботин
 $data_ads = [
     [
         'name' => '2014 Rossignol District Snowboard',
-        'category' => 'Доски и лыжи', 'price' => 10999,
+        'category' => 'Доски и лыжи',
+        'price' => 10999,
         'image_url' => 'img/lot-1.jpg'
     ],
     [
@@ -58,8 +45,7 @@ $data_ads = [
 
 $data = [
     'product_category' => $product_category,
-    'data_ads' => $data_ads,
-    'lot_time_remaining' => $lot_time_remaining
+    'data_ads' => $data_ads
 ]
 ?>
 <!DOCTYPE html>

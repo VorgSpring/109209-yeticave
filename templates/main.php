@@ -48,7 +48,7 @@
                                 <span class='lot__cost'><?= $item['price'] ?><b class='rub'>р</b></span>
                             </div>
                             <div class='lot__timer timer'>
-                                <?=  $data['lot_time_remaining'] ?>
+                                <?= lotTimeRemaining() ?>
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Функция подключения шаблонов
  * @param {String} $path
@@ -26,4 +25,25 @@ function includeTemplate($path, $data = []) {
  */
 function transformData(&$item) {
     $item = htmlspecialchars($item);
+}
+
+/**
+ * Возвращает время до полуночи этого дня в формате "чч:мм"
+ * @return false|string
+ */
+function lotTimeRemaining() {
+    // устанавливаем часовой пояс в Московское время
+    date_default_timezone_set('Europe/Moscow');
+
+    // временная метка для полночи следующего дня
+    $tomorrow = strtotime('tomorrow midnight');
+
+    // временная метка для настоящего времени
+    $now = time();
+
+    // оставшееся время
+    $remaining_time = $tomorrow - $now;
+
+    // оставшееся время в формате (ЧЧ:ММ)
+    return gmdate('H: i', $remaining_time);
 }
