@@ -2,27 +2,14 @@
 // функция подключения шаблонов
 require_once 'functions.php';
 
-// ставки пользователей
-$bets = [
-    ['name' => 'Иван', 'price' => 11500, 'ts' => strtotime('-' . rand(1, 50) .' minute')],
-    ['name' => 'Константин', 'price' => 11000, 'ts' => strtotime('-' . rand(1, 18) .' hour')],
-    ['name' => 'Евгений', 'price' => 10500, 'ts' => strtotime('-' . rand(25, 50) .' hour')],
-    ['name' => 'Семён', 'price' => 10000, 'ts' => strtotime('last week')]
-];
+// данные для объявления
+require_once 'data/data.php';
 
-// данные о лоте
-$lot = [
-    'name' => 'DC Ply Mens 2016/2017 Snowboard',
-    'category' => 'Доски и лыжи',
-    'price' => 11500,
-    'image_url' => 'img/lot-2.jpg',
-    'description' => 'Легкий маневренный сноуборд, готовый дать жару в любом парке, растопив снег
-                    мощным щелчкоми четкими дугами. Стекловолокно Bi-Ax, уложенное в двух направлениях, 
-                    наделяет этот снаряд отличной гибкостью и отзывчивостью, а симметричная геометрия в 
-                    сочетании с классическим прогибом кэмбер позволит уверенно держать высокие скорости. 
-                    А если к концу катального дня сил совсем не останется, просто посмотрите на Вашу доску 
-                    и улыбнитесь, крутая графика от Шона Кливера еще никого не оставляла равнодушным.'
-];
+$is_valid = false;
+
+if(is_numeric($_GET['id']) && array_key_exists($_GET['id'], $data_ads)) {
+    $is_valid = true;
+}
 
 /**
  * Количество часов в одном дне
@@ -63,7 +50,8 @@ function formatTime($time) {
 
 $data = [
     'bets' => $bets,
-    'lot' => $lot
+    'product_category' => $product_category,
+    'data_ads' => $data_ads
 ]
 ?>
 
@@ -71,7 +59,7 @@ $data = [
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>DC Ply Mens 2016/2017 Snowboard</title>
+    <title><?= $data['data_ads'][$_GET['id']]['name'] ?></title>
     <link href="css/normalize.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 </head>
@@ -81,7 +69,11 @@ $data = [
 <?= includeTemplate('templates/header.php') ?>
 
 <!-- main -->
-<?= includeTemplate('templates/lot.php', $data) ?>
+<?php if($is_valid): ?>
+    <?= includeTemplate('templates/lot.php', $data) ?>
+<?php else: ?>
+    <?= includeTemplate('templates/404.php', ['product_category' => $product_category]) ?>
+<?php endif; ?>
 
 <!-- footer -->
 <?= includeTemplate('templates/footer.php') ?>
