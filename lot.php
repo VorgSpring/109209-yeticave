@@ -69,11 +69,11 @@ $data = [
 <?= includeTemplate('templates/header.php') ?>
 
 <!-- main -->
-<?php if($is_valid): ?>
-    <?= includeTemplate('templates/lot.php', $data) ?>
-<?php else: ?>
-    <?= includeTemplate('templates/404.php', ['product_category' => $product_category]) ?>
-<?php endif; ?>
+<?php if($is_valid)
+    print includeTemplate('templates/lot.php', $data);
+else
+    print includeTemplate('templates/404.php', ['product_category' => $product_category]);
+?>
 
 <!-- footer -->
 <?= includeTemplate('templates/footer.php') ?>

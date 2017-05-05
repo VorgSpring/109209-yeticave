@@ -21,7 +21,7 @@ $data = [
 <body>
 
 <!-- header -->
-<?= includeTemplate('templates/header.php') ?>
+<?= includeTemplate('templates/header.php', ['is_start_page' => true]) ?>
 
 <!-- main -->
 <?= includeTemplate('templates/main.php', $data) ?>
