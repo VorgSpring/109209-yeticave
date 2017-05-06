@@ -59,7 +59,7 @@ $data = [
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title><?= $data['data_ads'][$_GET['id']]['name'] ?></title>
+    <title><?= $is_valid ? $data['data_ads'][$_GET['id']]['name']: '404' ?></title>
     <link href="css/normalize.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 </head>
