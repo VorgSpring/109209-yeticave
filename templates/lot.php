@@ -1,35 +1,23 @@
-<main>
+<main  class="main">
     <nav class="nav">
         <ul class="nav__list container">
-            <li class="nav__item">
-                <a href="">Доски и лыжи</a>
-            </li>
-            <li class="nav__item">
-                <a href="">Крепления</a>
-            </li>
-            <li class="nav__item">
-                <a href="">Ботинки</a>
-            </li>
-            <li class="nav__item">
-                <a href="">Одежда</a>
-            </li>
-            <li class="nav__item">
-                <a href="">Инструменты</a>
-            </li>
-            <li class="nav__item">
-                <a href="">Разное</a>
-            </li>
+            <?php foreach ($data['product_category'] as $item): ?>
+                <li class="nav__item">
+                    <a href=""><?= $item ?></a>
+                </li>
+            <?php endforeach; ?>
         </ul>
     </nav>
     <section class="lot-item container">
-        <h2><?= $data['lot']['name'] ?></h2>
+        <h2><?= $data['data_ads'][$_GET['id']]['name'] ?></h2>
         <div class="lot-item__content">
             <div class="lot-item__left">
                 <div class="lot-item__image">
-                    <img src="<?= $data['lot']['image_url'] ?>" width="730" height="548" alt="<?= $data['lot']['name'] ?>">
+                    <img src="<?= $data['data_ads'][$_GET['id']]['image_url'] ?>" width="730" height="548"
+                            alt="<?= $data['data_ads'][$_GET['id']]['name'] ?>">
                 </div>
-                <p class="lot-item__category">Категория: <span><?= $data['lot']['category'] ?></span></p>
-                <p class="lot-item__description"><?= $data['lot']['description'] ?></p>
+                <p class="lot-item__category">Категория: <span><?= $data['data_ads'][$_GET['id']]['category'] ?></span></p>
+                <p class="lot-item__description"><?= $data['data_ads'][$_GET['id']]['description'] ?></p>
             </div>
             <div class="lot-item__right">
                 <div class="lot-item__state">
@@ -39,7 +27,7 @@
                     <div class="lot-item__cost-state">
                         <div class="lot-item__rate">
                             <span class="lot-item__amount">Текущая цена</span>
-                            <span class="lot-item__cost"><?= $data['lot']['price'] ?></span>
+                            <span class="lot-item__cost"><?= $data['data_ads'][$_GET['id']]['price'] ?></span>
                         </div>
                         <div class="lot-item__min-cost">
                             Мин. ставка <span>12 000 р</span>
