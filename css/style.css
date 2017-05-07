@@ -1000,6 +1000,10 @@ h2 {
   box-sizing: border-box;
 }
 
+.lot-item__timer--date {
+  width: 95px;
+}
+
 .lot-item__cost-state {
   display: -webkit-flex;
   display: -ms-flexbox;
