@@ -27,7 +27,7 @@ $data = [
 <?= includeTemplate('templates/main.php', $data) ?>
 
 <!-- footer -->
-<?= includeTemplate('templates/footer.php') ?>
+<?= includeTemplate('templates/footer.php', ['product_category' => $product_category]) ?>
 
 </body>
 </html>
