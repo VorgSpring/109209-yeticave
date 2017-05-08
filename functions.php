@@ -1,5 +1,23 @@
 <?php
 /**
+ * Количество часов в одном дне
+ * @type number
+ */
+const HOURS_IN_DAY = 24;
+
+/**
+ * Количество минут в одном часе
+ * @type number
+ */
+const MINUTES_IN_HOUR = 60;
+
+/**
+ * Количество секунд в одном часе
+ * @type number
+ */
+const SECONDS_IN_HOUR = 3600;
+
+/**
  * Функция подключения шаблонов
  * @param {String} $path
  * @param {Array} $data
@@ -63,4 +81,54 @@ function searchUserByEmail($email, $users) {
         }
     }
     return $result;
+}
+
+/**
+ * Возвращает время в относительном формате
+ * @param $time
+ * @return string
+ */
+function formatTime($time) {
+    $now = time();
+
+    $interval = ($now - $time) / SECONDS_IN_HOUR;
+
+    if($interval > HOURS_IN_DAY) {
+        return date('"d.m.y" в H:i', $time);
+    } else if($interval < 1) {
+        return (int)($interval * MINUTES_IN_HOUR) . ' минут назад';
+    } else {
+        return (int)$interval . ' часов назад';
+    }
+}
+
+/**
+ * Добавляет новую cookie для новой ставки
+ * @param $value
+ * @param $id
+ */
+function setRateCookie($value, $id) {
+    $my_rates = json_decode($_COOKIE['my_rates'], true);
+
+    $data = [
+        'image' => $value['image'],
+        'name' => $value['name'],
+        'cost' => $value['cost'],
+        'id' => $id,
+        'time' => time()
+    ];
+
+    $my_rates[$id] = $data;
+
+    setcookie('my_rates', json_encode($my_rates), strtotime("tomorrow midnight"));
+}
+
+/**
+ * Проверка авторизации
+ */
+function checkAuthorization() {
+    if (!isset($_SESSION['user'])) {
+        header('HTTP/1.0 403 Forbiden');
+        header('Location: /login.php');
+    }
 }

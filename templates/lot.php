@@ -29,17 +29,27 @@
                             <span class="lot-item__amount">Текущая цена</span>
                             <span class="lot-item__cost"><?= $data['data_ads'][$_GET['id']]['price'] ?></span>
                         </div>
-                        <div class="lot-item__min-cost">
-                            Мин. ставка <span>12 000 р</span>
-                        </div>
+                        <?php if (checkCookieAndAuthorization()): ?>
+                            <div class="lot-item__min-cost">
+                                Мин. ставка <span><?= $data['data_ads'][$_GET['id']]['price'] ?></span>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                    <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post">
-                        <p class="lot-item__form-item">
-                            <label for="cost">Ваша ставка</label>
-                            <input id="cost" type="number" name="cost" placeholder="12 000">
-                        </p>
-                        <button type="submit" class="button">Сделать ставку</button>
-                    </form>
+
+                    <?php if (checkCookieAndAuthorization()): ?>
+                        <form class="lot-item__form <?= $data['errors']? 'form--invalid': '' ?>"
+                              action="lot.php?<?= 'id='.$_GET['id']?>" method="post">
+                            <p class="lot-item__form-item <?= $data['errors']['cost']? 'form__item--invalid': '' ?>">
+                                <label for="cost">Ваша ставка</label>
+                                <input id="cost" type="number" name="cost"
+                                       min="<?= $data['data_ads'][$_GET['id']]['price'] ?>"
+                                       placeholder="<?= $data['data_ads'][$_GET['id']]['price'] ?>">
+                                <span class="form__error"><?= $data['errors']['cost'] ?></span>
+                            </p>
+                            <button type="submit" class="button">Сделать ставку</button>
+                        </form>
+                    <?php endif; ?>
+
                 </div>
                 <div class="history">
                     <h3>История ставок (<span><?= count($data['bets']) ?></span>)</h3>
