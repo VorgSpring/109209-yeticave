@@ -1,4 +1,5 @@
 <?php
+session_start();
 // функция подключения шаблонов
 require_once 'functions.php';
 

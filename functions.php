@@ -29,7 +29,7 @@ function transformData(&$item) {
 
 /**
  * Возвращает время до полуночи этого дня в формате "чч:мм"
- * @return false|string
+ * @return string
  */
 function lotTimeRemaining() {
     // устанавливаем часовой пояс в Московское время
@@ -46,4 +46,21 @@ function lotTimeRemaining() {
 
     // оставшееся время в формате (ЧЧ:ММ)
     return gmdate('H: i', $remaining_time);
+}
+
+/**
+ * Ищет пользователя с переданным $email в массиве $users
+ * @param {String} $email
+ * @param {Array} $users
+ * @return null|array
+ */
+function searchUserByEmail($email, $users) {
+    $result = null;
+    foreach ($users as $user) {
+        if ($user['email'] == $email) {
+            $result = $user;
+            break;
+        }
+    }
+    return $result;
 }
