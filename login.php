@@ -58,6 +58,7 @@ if(!is_null($email) && !is_null($password)) {
     }
 }
 
+// данные для шаблона
 $data = [
     'product_category' => $product_category,
     'errors' => $data_errors_validation
@@ -78,7 +79,7 @@ $data = [
 <?= includeTemplate('templates/header.php') ?>
 
 <!-- main -->
-<?php if(empty($_POST) || (count($data_errors_validation) != 0))
+<?php if(empty($_POST) || (count($data_errors_validation) !== 0))
     print includeTemplate('templates/login.php', $data);
 ?>
 

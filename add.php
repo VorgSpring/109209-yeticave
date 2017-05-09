@@ -1,13 +1,11 @@
 <?php
 session_start();
 
-// проверка авторизации
-if (!isset($_SESSION['user'])) {
-    header("HTTP/1.0 403 Forbiden");
-    header("Location: /login.php");
-}
 // функция подключения шаблонов
 require_once 'functions.php';
+
+// проверка авторизации
+checkAuthorization();
 
 // данные для объявления
 require_once 'data/data.php';
@@ -109,6 +107,7 @@ if (!empty($_POST)) {
     }
 }
 
+// данные для шаблона
 $data = [
     'product_category' => $product_category,
     'errors' => $data_errors_validation
@@ -129,7 +128,7 @@ $data = [
 <?= includeTemplate('templates/header.php') ?>
 
 <!-- main -->
-<?php if(!empty($_POST) && (count($data_errors_validation) == 0))
+<?php if(!empty($_POST) && (count($data_errors_validation) === 0))
     print includeTemplate('templates/my-lot.php', $data_new_lot);
 else
     print includeTemplate('templates/add-lot.php', $data);

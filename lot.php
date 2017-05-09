@@ -13,48 +13,47 @@ if(is_numeric($_GET['id']) && array_key_exists($_GET['id'], $data_ads)) {
     $is_valid = true;
 }
 
-/**
- * Количество часов в одном дне
- * @type number
- */
-const HOURS_IN_DAY = 24;
+// данные об ошибках
+$data_errors_validation = [];
 
-/**
- * Количество минут в одном часе
- * @type number
- */
-const MINUTES_IN_HOUR = 60;
+// данные о ставках
+$my_rates = json_decode($_COOKIE['my_rates'], true);
 
-/**
- * Количество секунд в одном часе
- * @type number
- */
-const SECONDS_IN_HOUR = 3600;
+// проверка полученных данных
+if (!empty($_POST)) {
+    // проверка сделанной ставки
+    if (!empty($_POST['cost']) && ($_POST['cost'] > $data_ads[$_GET['id']]['price']) && is_numeric($_POST['cost'])) {
+        $value = [
+            'name' => $data_ads[$_GET['id']]['name'],
+            'image' => $data_ads[$_GET['id']]['image_url'],
+            'category' => $data_ads[$_GET['id']]['category'],
+            'cost' => $_POST['cost']
+        ];
 
-/**
- * Возвращает время в относительном формате
- * @param $time
- * @return string
- */
-function formatTime($time) {
-    $now = time();
+        setRateCookie($value, $_GET['id']);
 
-    $interval = ($now - $time) / SECONDS_IN_HOUR;
-
-    if($interval > HOURS_IN_DAY) {
-        return date('"d.m.y" в H:i', $time);
-    } else if($interval < 1) {
-        return ($interval * MINUTES_IN_HOUR) . ' минут назад';
+        header('Location: /mylots.php');
     } else {
-        return $interval . ' часов назад';
+        $data_errors_validation['cost'] = 'Некорректная ставка';
     }
 }
 
+// данные для шаблона
 $data = [
     'bets' => $bets,
     'product_category' => $product_category,
-    'data_ads' => $data_ads
-]
+    'data_ads' => $data_ads,
+    'errors' => $data_errors_validation,
+    'my_rates' => $my_rates
+];
+
+/**
+ * Проверка на наличие cookie и авторизацию
+ * @return bool
+ */
+function checkCookieAndAuthorization() {
+    return (isset($_SESSION['user']) && empty(json_decode($_COOKIE['my_rates'], true)[$_GET['id']]));
+}
 ?>
 
 <!DOCTYPE html>
