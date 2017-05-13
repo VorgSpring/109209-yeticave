@@ -10,17 +10,18 @@ CREATE TABLE lots (
   description TEXT,
   image_url CHAR(64),
   start_price INT NOT NULL,
-  completion_date DATE NOT NULL,
+  completion_date DATETIME NOT NULL,
   step_rate INT DEFAULT 0,
   favorites INT DEFAULT 0,
   author_id INT NOT NULL,
-  winner_id INT NOT NULL,
+  winner_id INT,
   category_id INT NOT NULL
 );
 
 CREATE TABLE rates (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   date DATETIME NOT NULL,
+  price INT NOT NULL,
   user_id INT NOT NULL,
   lot_id INT NOT NULL
 );
