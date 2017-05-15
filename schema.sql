@@ -1,7 +1,17 @@
 CREATE TABLE category (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name CHAR(64) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE users (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  registration_date DATETIME NOT NULL,
+  email CHAR(128) NOT NULL,
+  name CHAR(64) NOT NULL,
+  password CHAR(32) NOT NULL,
+  avatar CHAR(64),
+  contacts TEXT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE lots (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -15,26 +25,22 @@ CREATE TABLE lots (
   favorites INT DEFAULT 0,
   author_id INT NOT NULL,
   winner_id INT,
-  category_id INT NOT NULL
-);
+  category_id INT NOT NULL,
+  FOREIGN KEY (category_id) REFERENCES category(id),
+  FOREIGN KEY (author_id) REFERENCES users(id),
+  FOREIGN KEY (winner_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE rates (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   date DATETIME NOT NULL,
   price INT NOT NULL,
   user_id INT NOT NULL,
-  lot_id INT NOT NULL
-);
+  lot_id INT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (lot_id) REFERENCES lots(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE users (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  registration_date DATETIME NOT NULL,
-  email CHAR(128) NOT NULL,
-  name CHAR(64) NOT NULL,
-  password CHAR(32) NOT NULL,
-  avatar CHAR(64),
-  contacts TEXT
-);
 
 CREATE UNIQUE INDEX user_email ON users(email);
 CREATE UNIQUE INDEX category_name ON category(name);
