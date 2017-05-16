@@ -1,4 +1,7 @@
 <?php
+// Создает подготовленное выражение на основе готового SQL запроса и переданных данных
+require_once 'mysql_helper.php';
+
 /**
  * Количество часов в одном дне
  * @type number
@@ -130,5 +133,100 @@ function checkAuthorization() {
     if (!isset($_SESSION['user'])) {
         header('HTTP/1.0 403 Forbiden');
         header('Location: /login.php');
+    }
+}
+
+/**
+ * Функция для получения данных
+ * @param $resource
+ * @param $request
+ * @param array $data
+ * @return array
+ */
+function getData($resource, $request, $data = []) {
+    // получаем подготовленное выражение
+    $prepared_statement = db_get_prepare_stmt($resource, $request, $data);
+
+    // выполняем запрос
+    if(mysqli_stmt_execute($prepared_statement)) {
+        $result = mysqli_stmt_get_result($prepared_statement);
+        return mysqli_fetch_all($result, MYSQLI_ASSOC);
+    } else {
+        return [];
+    }
+}
+
+/**
+ * Функция для вставки данных
+ * @param $resource
+ * @param $request
+ * @param $data
+ * @return bool|number
+ */
+function insertData($resource, $request, $data) {
+    // получаем подготовленное выражение
+    $prepared_statement = db_get_prepare_stmt($resource, $request, $data);
+
+    // выполняем запрос
+    if(mysqli_stmt_execute($prepared_statement)) {
+        return mysqli_stmt_insert_id($resource);
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Форматирует ассоциативный массив
+ * переобразуя все ключи в строку, а значения в простой массив
+ * @param $array
+ * @return array
+ */
+function getFormatArray($array) {
+    $fields = '';
+    $value = [];
+
+    foreach ($array as $key => $value) {
+        $fields .= "`$key`=?, ";
+        $value[] = $value;
+    };
+
+    return [$fields => $value];
+}
+
+/**
+ * Функция для обновления данных
+ * @param $resource
+ * @param $table
+ * @param $data
+ * @param $requirement
+ * @return bool|int
+ */
+function updateData($resource, $table, $data, $requirement) {
+    // форматируем массив данных
+    $format_data = getFormatArray($data);
+    // получаем поля для выражения
+    $update_fields = array_keys($format_data)[0];
+    // получаем значения для выражения
+    $update_value = array_values($format_data)[0];
+
+    // аналогично форматируем массив условий
+    $requirement_data = getFormatArray($requirement);
+    $requirement_fields = array_keys($requirement_data)[0];
+    $requirement_value = array_values($requirement_data)[0];
+
+    // объединяем все массивы значений
+    $update_data = array_merge($update_value, $requirement_value);
+
+    // формируем запрос
+    $request = "UPDATE $table SET $update_fields WHERE $requirement_fields";
+
+    // получаем подготовленное выражение
+    $prepared_statement = db_get_prepare_stmt($resource, $request, $update_data);
+
+    // выполняем запрос
+    if (mysqli_stmt_execute($prepared_statement)) {
+        return mysqli_stmt_affected_rows($prepared_statement);
+    } else {
+        return false;
     }
 }
