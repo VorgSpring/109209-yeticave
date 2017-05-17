@@ -8,7 +8,7 @@ CREATE TABLE users (
   registration_date DATETIME NOT NULL,
   email CHAR(128) NOT NULL,
   name CHAR(64) NOT NULL,
-  password CHAR(32) NOT NULL,
+  password CHAR(64) NOT NULL,
   avatar CHAR(64),
   contacts TEXT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

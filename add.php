@@ -7,8 +7,12 @@ require_once 'functions.php';
 // проверка авторизации
 checkAuthorization();
 
-// данные для объявления
-require_once 'data/data.php';
+// проверяем подключение к базе
+$resource = checkConnectToDatabase();
+
+// категории товаров
+$sql_for_category = 'SELECT * FROM category ORDER BY id';
+$data['product_category'] = getData($resource, $sql_for_category);
 
 /**
  * Регулярное выражение для проверки формата даты
@@ -16,67 +20,66 @@ require_once 'data/data.php';
  */
 const REG_EXP = '/(0[1-9]|1[0-9]|2[0-9]|3[01]).(0[1-9]|1[012]).[0-9]{4}/';
 
-// данные о новом лоте
-$data_new_lot = [];
-
-// данные об ошибках
-$data_errors_validation = [];
-
 // проверка полученных данных
 if (!empty($_POST)) {
     // проверка наименования
     if (!empty($_POST['lot-name'])) {
-        $data_new_lot['name'] = htmlspecialchars($_POST['lot-name']);
+        $data['new_lot']['name'] = htmlspecialchars($_POST['lot-name']);
     } else {
-        $data_errors_validation['name'] = 'Введите наименование лота';
+        $data['errors']['name'] = 'Введите наименование лота';
     }
 
     // проверка описания
     if (!empty($_POST['message'])) {
-        $data_new_lot['description'] = htmlspecialchars($_POST['message']);
+        $data['new_lot']['description'] = htmlspecialchars($_POST['message']);
     } else {
-        $data_errors_validation['message'] = 'Введите описание лота';
+        $data['errors']['message'] = 'Введите описание лота';
     }
 
     //проверка поля начальной стоимости
     if (empty($_POST['lot-rate']) || !is_numeric($_POST['lot-rate']) || $_POST['lot-rate'] < 0) {
-        $data_errors_validation['lot-rate'] = 'Некорректное значение';
+        $data['errors']['lot-rate'] = 'Некорректное значение';
     } else {
-        $data_new_lot['price'] = $_POST['lot-rate'];
+        $data['new_lot']['start_price'] = $_POST['lot-rate'];
     }
 
     //проверка поля шага ставки
     if (empty($_POST['lot-step']) || !is_numeric($_POST['lot-step']) || $_POST['lot-step'] < 0) {
-        $data_errors_validation['lot-step'] = 'Некорректное значение';
+        $data['errors']['lot-step'] = 'Некорректное значение';
     } else {
-        $data_new_lot['step'] = $_POST['lot-step'];
+        $data['new_lot']['step_rate'] = $_POST['lot-step'];
     }
 
     // проверка даты
     if (empty($_POST['lot-date']) || !preg_match(REG_EXP, $_POST['lot-date'])) {
-        $data_errors_validation['lot-date'] = 'Введите дату в формате "дд.мм.гггг"';
+        $data['errors']['lot-date'] = 'Введите дату в формате "дд.мм.гггг"';
     } else {
-        $data_new_lot['date'] = $_POST['lot-date'];
+        $data['new_lot']['completion_date'] = $_POST['lot-date'];
     }
 
     // проверка выбранной категории
     if (!empty($_POST['category'])) {
         $is_valid_category = false;
 
-        foreach ($product_category as $value) {
-            if($value == $_POST['category']) {
+        foreach ($data['product_category'] as $value) {
+            if($value['name'] == $_POST['category']) {
                 $is_valid_category = true;
             }
         }
 
         if($is_valid_category) {
-            $data_new_lot['category'] = $_POST['category'];
+            $data['new_lot']['category'] = $_POST['category'];
+
+            // получаем id выбранной категории
+            $sql_for_id_category = 'SELECT id FROM category WHERE name=?';
+            $data['new_lot']['category_id'] =
+                getData($resource, $sql_for_id_category, ['name' => $_POST['category']])[0]['id'];
         } else {
-            $data_errors_validation['category'] = 'Выбрана некорректная категория';
+            $data['errors']['category'] = 'Выбрана некорректная категория';
         }
 
     } else {
-        $data_errors_validation['category'] = 'Выберете категорию';
+        $data['errors']['category'] = 'Выберете категорию';
     }
 
     // проверка загружаемой фотографии
@@ -96,24 +99,17 @@ if (!empty($_POST)) {
         $white_list = ['.jpg', '.jpeg', '.png'];
 
         if (!(in_array($file_extension, $white_list))) {
-            $data_errors_validation['file'] = 'Загрузите фото в формате "jpg", "jpeg" или "png"';
+            $data['errors']['file'] = 'Загрузите фото в формате "jpg", "jpeg" или "png"';
         } elseif (move_uploaded_file($file['tmp_name'], $file_name)) {
-            $data_new_lot['image_url'] = $file_name;
+            $data['new_lot']['image_url'] = $file_name;
         } else {
-            $data_errors_validation['file'] = 'Возникла ошибка при загрузке файла';
+            $data['errors']['file'] = 'Возникла ошибка при загрузке файла';
         }
     } else {
-        $data_errors_validation['file'] = 'Возникла ошибка при загрузке файла';
+        $data['errors']['file'] = 'Возникла ошибка при загрузке файла';
     }
 }
-
-// данные для шаблона
-$data = [
-    'product_category' => $product_category,
-    'errors' => $data_errors_validation
-]
 ?>
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -128,14 +124,36 @@ $data = [
 <?= includeTemplate('templates/header.php') ?>
 
 <!-- main -->
-<?php if(!empty($_POST) && (count($data_errors_validation) === 0))
-    print includeTemplate('templates/my-lot.php', $data_new_lot);
-else
+<?php
+if(!empty($_POST) && (count($data['errors']) === 0)) {
+    // данные для вставки в таблицу
+    $sql_for_new_lot = 'INSERT INTO lots SET date_created=?, name=?, description=?, image_url=?, start_price=?, 
+                          completion_date=?, step_rate=?, author_id=?, category_id=?';
+    $value = [
+        'date_created' => date("Y-m-d H:i:s"),
+        'name' => $data['new_lot']['name'],
+        'description' => $data['new_lot']['description'],
+        'image_url' => $data['new_lot']['image_url'],
+        'start_price' => $data['new_lot']['start_price'],
+        'completion_date' => date("Y-m-d H:i:s", strtotime($data['new_lot']['completion_date'])),
+        'step_rate' => $data['new_lot']['step_rate'],
+        'author_id' => $_SESSION['user']['id'],
+        'category_id' => $data['new_lot']['category_id']
+    ];
+
+    if(insertData($resource, $sql_for_new_lot, $value)) {
+        print includeTemplate('templates/my-lot.php', $data['new_lot']);
+    } else {
+        header('HTTP/1.0 501 Not Implemented');
+        header('Location: /501.html');
+    }
+} else {
     print includeTemplate('templates/add-lot.php', $data);
+}
 ?>
 
 <!-- footer -->
-<?= includeTemplate('templates/footer.php', ['product_category' => $product_category]) ?>
+<?= includeTemplate('templates/footer.php', ['product_category' => $data['product_category']]) ?>
 
 </body>
 </html>

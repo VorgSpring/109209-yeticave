@@ -92,6 +92,7 @@ function searchUserByEmail($email, $users) {
  * @return string
  */
 function formatTime($time) {
+    $time = strtotime($time);
     $now = time();
 
     $interval = ($now - $time) / SECONDS_IN_HOUR;
@@ -137,6 +138,21 @@ function checkAuthorization() {
 }
 
 /**
+ * Проверка подключения к базе данных
+ * @return object
+ */
+function checkConnectToDatabase() {
+    $resource = mysqli_connect('localhost', 'root', '', 'yeticave');
+
+    if (!$resource) {
+        header('HTTP/1.0 501 Not Implemented');
+        header('Location: /501.html');
+    } else {
+        return $resource;
+    }
+}
+
+/**
  * Функция для получения данных
  * @param $resource
  * @param $request
@@ -169,7 +185,7 @@ function insertData($resource, $request, $data) {
 
     // выполняем запрос
     if(mysqli_stmt_execute($prepared_statement)) {
-        return mysqli_stmt_insert_id($resource);
+        return mysqli_stmt_insert_id($prepared_statement);
     } else {
         return false;
     }
@@ -186,7 +202,7 @@ function getFormatArray($array) {
     $value = [];
 
     foreach ($array as $key => $value) {
-        $fields .= "`$key`=?, ";
+        $fields .= "$key=?, ";
         $value[] = $value;
     };
 

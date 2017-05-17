@@ -3,21 +3,21 @@
         <ul class="nav__list container">
             <?php foreach ($data['product_category'] as $item): ?>
                 <li class="nav__item">
-                    <a href=""><?= $item ?></a>
+                    <a href=""><?= $item['name'] ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>
     </nav>
     <section class="lot-item container">
-        <h2><?= $data['data_ads'][$_GET['id']]['name'] ?></h2>
+        <h2><?= $data['lot']['name'] ?></h2>
         <div class="lot-item__content">
             <div class="lot-item__left">
                 <div class="lot-item__image">
-                    <img src="<?= $data['data_ads'][$_GET['id']]['image_url'] ?>" width="730" height="548"
-                            alt="<?= $data['data_ads'][$_GET['id']]['name'] ?>">
+                    <img src="<?= $data['lot']['image_url'] ?>" width="730" height="548"
+                            alt="<?= $data['lot']['name'] ?>">
                 </div>
-                <p class="lot-item__category">Категория: <span><?= $data['data_ads'][$_GET['id']]['category'] ?></span></p>
-                <p class="lot-item__description"><?= $data['data_ads'][$_GET['id']]['description'] ?></p>
+                <p class="lot-item__category">Категория: <span><?= $data['lot']['category'] ?></span></p>
+                <p class="lot-item__description"><?= $data['lot']['description'] ?></p>
             </div>
             <div class="lot-item__right">
                 <div class="lot-item__state">
@@ -27,23 +27,23 @@
                     <div class="lot-item__cost-state">
                         <div class="lot-item__rate">
                             <span class="lot-item__amount">Текущая цена</span>
-                            <span class="lot-item__cost"><?= $data['data_ads'][$_GET['id']]['price'] ?></span>
+                            <span class="lot-item__cost"><?= $data['lot']['start_price'] ?></span>
                         </div>
-                        <?php if (checkCookieAndAuthorization()): ?>
+                        <?php if ($data['check']): ?>
                             <div class="lot-item__min-cost">
-                                Мин. ставка <span><?= $data['data_ads'][$_GET['id']]['price'] ?></span>
+                                Мин. ставка <span><?= $data['lot']['start_price'] ?></span>
                             </div>
                         <?php endif; ?>
                     </div>
 
-                    <?php if (checkCookieAndAuthorization()): ?>
+                    <?php if ($data['check']): ?>
                         <form class="lot-item__form <?= $data['errors']? 'form--invalid': '' ?>"
                               action="lot.php?<?= 'id='.$_GET['id']?>" method="post">
                             <p class="lot-item__form-item <?= $data['errors']['cost']? 'form__item--invalid': '' ?>">
                                 <label for="cost">Ваша ставка</label>
                                 <input id="cost" type="number" name="cost"
-                                       min="<?= $data['data_ads'][$_GET['id']]['price'] ?>"
-                                       placeholder="<?= $data['data_ads'][$_GET['id']]['price'] ?>">
+                                       min="<?= $data['lot']['start_price'] ?>"
+                                       placeholder="<?= $data['lot']['start_price'] ?>">
                                 <span class="form__error"><?= $data['errors']['cost'] ?></span>
                             </p>
                             <button type="submit" class="button">Сделать ставку</button>
@@ -52,13 +52,13 @@
 
                 </div>
                 <div class="history">
-                    <h3>История ставок (<span><?= count($data['bets']) ?></span>)</h3>
+                    <h3>История ставок (<span><?= count($data['rates']) ?></span>)</h3>
                     <table class="history__list">
-                        <?php foreach ($data['bets'] as $item):?>
+                        <?php foreach ($data['rates'] as $item):?>
                             <tr class="history__item">
-                                <td class="history__name"><?= $item['name'] ?></td>
+                                <td class="history__name"><?= $item['user'] ?></td>
                                 <td class="history__price"><?= $item['price'] ?> р</td>
-                                <td class="history__time"><?= formatTime($item['ts']) ?></td>
+                                <td class="history__time"><?= formatTime($item['date']) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </table>

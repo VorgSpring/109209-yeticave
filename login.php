@@ -7,8 +7,12 @@ require_once 'functions.php';
 // данные для объявления
 require_once 'data/data.php';
 
-// пользователи для аутентификации
-require_once 'data/userdata.php';
+// проверяем подключение к базе
+$resource = checkConnectToDatabase();
+
+// категории товаров
+$sql_for_category = 'SELECT * FROM category ORDER BY id';
+$data['product_category'] = getData($resource, $sql_for_category);
 
 /**
  * Регулярное выражение для проверки адреса почты
@@ -17,7 +21,7 @@ require_once 'data/userdata.php';
 const REG_EXP = '/.+@.+\..+/i';
 
 // данные об ошибках
-$data_errors_validation = [];
+$data['errors'] = [];
 
 // адрес почты пользователя
 $email = null;
@@ -31,38 +35,35 @@ if (!empty($_POST)) {
     if (!empty($_POST['email']) && preg_match(REG_EXP, $_POST['email'])) {
         $email = htmlspecialchars($_POST['email']);
     } else {
-        $data_errors_validation['email'] = 'Введите e-mail';
+        $data['errors']['email'] = 'Введите e-mail';
     }
 
     // проверка пароля
     if (!empty($_POST['password'])) {
         $password = htmlspecialchars($_POST['password']);
     } else {
-        $data_errors_validation['password'] = 'Введите пароль';
+        $data['errors']['password'] = 'Введите пароль';
     }
 }
 
 // если данные введены верно
 if(!is_null($email) && !is_null($password)) {
     // ищем пользователя по email
-    if ($user = searchUserByEmail($email, $users)) {
+    $sql_for_search_user_email = 'SELECT id, email, name, password, avatar FROM users WHERE email=?';
+    $user = getData($resource, $sql_for_search_user_email, ['email' => $email])[0];
+    $data['user'] = $user;
+    if (!empty($user)) {
         // если пользователь найден, проверяем пароль
         if (password_verify($password, $user['password'])) {
             $_SESSION['user'] = $user;
             header("Location: /index.php");
         } else {
-            $data_errors_validation['password'] = 'Неверный пароль';
+            $data['errors']['password'] = 'Неверный пароль';
         }
     } else {
-        $data_errors_validation['email'] = 'Пользователь с таким e-mail не найден';
+        $data['errors']['email'] = 'Пользователь с таким e-mail не найден';
     }
 }
-
-// данные для шаблона
-$data = [
-    'product_category' => $product_category,
-    'errors' => $data_errors_validation
-]
 ?>
 
 <!DOCTYPE html>
@@ -79,12 +80,12 @@ $data = [
 <?= includeTemplate('templates/header.php') ?>
 
 <!-- main -->
-<?php if(empty($_POST) || (count($data_errors_validation) !== 0))
+<?php if(empty($_POST) || (count($data['errors']) !== 0))
     print includeTemplate('templates/login.php', $data);
 ?>
 
 <!-- footer -->
-<?= includeTemplate('templates/footer.php', ['product_category' => $product_category]) ?>
+<?= includeTemplate('templates/footer.php', ['product_category' => $data['product_category']]) ?>
 
 </body>
 </html>

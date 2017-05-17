@@ -1,4 +1,4 @@
-<main>
+<main class="main">
     <nav class="nav">
         <ul class="nav__list container">
             <?php foreach ($data['product_category'] as $item): ?>
