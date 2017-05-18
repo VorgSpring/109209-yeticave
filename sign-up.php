@@ -1,6 +1,6 @@
 <?php
 session_start();
-//ini_set('display_errors', 0);
+ini_set('display_errors', 0);
 
 // функция подключения шаблонов
 require_once 'functions.php';
@@ -122,8 +122,6 @@ if (!empty($_POST)) {
 <?php if(empty($_POST) || (count($data['errors']) !== 0))
     print includeTemplate('templates/sign-up.php', $data);
 ?>
-
-<?php print_r($data['new_user']) ?>
 
 <!-- footer -->
 <?= includeTemplate('templates/footer.php', ['product_category' => $data['product_category']]) ?>

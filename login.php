@@ -1,11 +1,9 @@
 <?php
 session_start();
+ini_set('display_errors', 0);
 
 // функция подключения шаблонов
 require_once 'functions.php';
-
-// данные для объявления
-require_once 'data/data.php';
 
 // проверяем подключение к базе
 $resource = checkConnectToDatabase();

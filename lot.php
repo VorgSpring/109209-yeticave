@@ -1,6 +1,6 @@
 <?php
 session_start();
-//ini_set('display_errors', 0);
+ini_set('display_errors', 0);
 
 // функция подключения шаблонов
 require_once 'functions.php';
@@ -78,8 +78,6 @@ if($is_valid) {
 else
     print includeTemplate('templates/not-found-lot.php');
 ?>
-
-<?php// print_r($value); ?>
 
 <!-- footer -->
 <?= includeTemplate('templates/footer.php', ['product_category' => $data['product_category']]) ?>

@@ -34,8 +34,6 @@ $data['data_ads'] = getData($resource, $sql_for_lots);
 <!-- main -->
 <?= includeTemplate('templates/main.php', $data) ?>
 
-<?//php print_r($data); ?>
-
 <!-- footer -->
 <?= includeTemplate('templates/footer.php', ['product_category' => $data['product_category']]) ?>
 
