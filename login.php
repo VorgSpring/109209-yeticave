@@ -9,7 +9,7 @@ require_once 'functions.php';
 $resource = checkConnectToDatabase();
 
 // категории товаров
-$sql_for_category = 'SELECT * FROM category ORDER BY id';
+$sql_for_category = 'SELECT * FROM category';
 $data['product_category'] = getData($resource, $sql_for_category);
 
 /**

@@ -12,7 +12,7 @@ checkAuthorization();
 $resource = checkConnectToDatabase();
 
 // категории товаров
-$sql_for_category = 'SELECT * FROM category ORDER BY id';
+$sql_for_category = 'SELECT * FROM category';
 $data['product_category'] = getData($resource, $sql_for_category);
 
 /**
@@ -60,21 +60,13 @@ if (!empty($_POST)) {
 
     // проверка выбранной категории
     if (!empty($_POST['category'])) {
-        $is_valid_category = false;
+        // получаем id выбранной категории
+        $sql_for_id_category = 'SELECT id FROM category WHERE name=?';
+        $data['new_lot']['category_id'] =
+            getData($resource, $sql_for_id_category, ['name' => $_POST['category']])[0]['id'];
 
-        foreach ($data['product_category'] as $value) {
-            if($value['name'] == $_POST['category']) {
-                $is_valid_category = true;
-            }
-        }
-
-        if($is_valid_category) {
+        if(!empty($data['new_lot']['category_id'])) {
             $data['new_lot']['category'] = $_POST['category'];
-
-            // получаем id выбранной категории
-            $sql_for_id_category = 'SELECT id FROM category WHERE name=?';
-            $data['new_lot']['category_id'] =
-                getData($resource, $sql_for_id_category, ['name' => $_POST['category']])[0]['id'];
         } else {
             $data['errors']['category'] = 'Выбрана некорректная категория';
         }

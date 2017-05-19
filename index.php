@@ -8,7 +8,7 @@ require_once 'functions.php';
 // проверяем подключение к базе
 $resource = checkConnectToDatabase();
 
-$sql_for_category = 'SELECT * FROM category ORDER BY id';
+$sql_for_category = 'SELECT * FROM category';
 
 $data['product_category'] = getData($resource, $sql_for_category);
 

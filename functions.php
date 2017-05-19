@@ -145,8 +145,8 @@ function checkConnectToDatabase() {
     $resource = mysqli_connect('localhost', 'root', '', 'yeticave');
 
     if (!$resource) {
-        header('HTTP/1.0 501 Not Implemented');
-        header('Location: /501.html');
+        header('HTTP/1.0 500 Internal Server Error');
+        header('Location: /500.html');
     } else {
         return $resource;
     }
