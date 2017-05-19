@@ -14,15 +14,15 @@
                 <div class="lot-item__state">
                     Дата завершения:
                     <div class="lot-item__timer lot-item__timer--date timer">
-                        <?= $data['date'] ?>
+                        <?= $data['completion_date'] ?>
                     </div>
                     <div class="lot-item__cost-state">
                         <div class="lot-item__rate">
                             <span class="lot-item__amount">Начальная цена</span>
-                            <span class="lot-item__cost"><?= $data['price'] ?></span>
+                            <span class="lot-item__cost"><?= $data['start_price'] ?></span>
                         </div>
                         <div class="lot-item__min-cost">
-                            Шаг ставки <span><?= $data['step'] ?></span>
+                            Шаг ставки <span><?= $data['step_rate'] ?></span>
                         </div>
                     </div>
                 </div>

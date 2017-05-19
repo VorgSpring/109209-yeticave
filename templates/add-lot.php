@@ -3,12 +3,13 @@
         <ul class="nav__list container">
             <?php foreach ($data['product_category'] as $item): ?>
                 <li class="nav__item">
-                    <a href="all-lots.html"><?= $item ?></a>
+                    <a href="all-lots.html"><?= $item['name'] ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>
     </nav>
-    <form class="form form--add-lot container  <?= $data['errors']? 'form--invalid': '' ?>" enctype="multipart/form-data" action="add.php" method="post">
+    <form class="form form--add-lot container  <?= $data['errors']? 'form--invalid': '' ?>"
+          enctype="multipart/form-data" action="add.php" method="post">
         <h2>Добавление лота</h2>
         <div class="form__container-two">
             <div class="form__item <?= $data['errors']['name']? 'form__item--invalid': '' ?>">
@@ -21,7 +22,7 @@
                 <select id="category" name="category" required>
                     <option>Выберите категорию</option>
                     <?php foreach ($data['product_category'] as $item): ?>
-                        <option><?= $item ?></option>
+                        <option><?= $item['name'] ?></option>
                     <?php endforeach; ?>
                 </select>
                 <span class="form__error"><?= $data['errors']['category'] ?></span>

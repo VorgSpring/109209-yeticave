@@ -1,66 +1,69 @@
 <?php
 session_start();
+ini_set('display_errors', 0);
 
 // функция подключения шаблонов
 require_once 'functions.php';
 
-// данные для объявления
-require_once 'data/data.php';
+// проверяем подключение к базе
+$resource = checkConnectToDatabase();
 
-$is_valid = false;
+// категории товаров
+$sql_for_category = 'SELECT * FROM category';
+$data['product_category'] = getData($resource, $sql_for_category);
 
-if(is_numeric($_GET['id']) && array_key_exists($_GET['id'], $data_ads)) {
-    $is_valid = true;
-}
+// данные о лоте
+$sql_for_lot = 'SELECT lots.name, lots.id, lots.image_url, lots.start_price, lots.completion_date, lots.description,
+                    category.name AS category FROM lots JOIN category ON lots.category_id = category.id 
+                      WHERE lots.id=?';
+$data['lot'] = getData($resource, $sql_for_lot, ['lots.id' => $_GET['id']])[0];
 
-// данные об ошибках
-$data_errors_validation = [];
+// проверка валидности get запроса
+$is_valid = is_numeric($_GET['id']) && !empty($data['lot']);
 
-// данные о ставках
-$my_rates = json_decode($_COOKIE['my_rates'], true);
+if($is_valid) {
+    // данные об ошибках
+    $data['errors'] = [];
 
-// проверка полученных данных
-if (!empty($_POST)) {
-    // проверка сделанной ставки
-    if (!empty($_POST['cost']) && ($_POST['cost'] > $data_ads[$_GET['id']]['price']) && is_numeric($_POST['cost'])) {
-        $value = [
-            'name' => $data_ads[$_GET['id']]['name'],
-            'image' => $data_ads[$_GET['id']]['image_url'],
-            'category' => $data_ads[$_GET['id']]['category'],
-            'cost' => $_POST['cost']
-        ];
+    // данные о ставках
+    $sql_for_rates = 'SELECT rates.price, rates.date, rates.user_id, users.name AS user FROM rates 
+                        JOIN users ON rates.user_id = users.id WHERE rates.lot_id=? ORDER BY rates.date DESC ';
+    $data['rates'] = getData($resource, $sql_for_rates, ['rates.lot_id' => $_GET['id']]);
 
-        setRateCookie($value, $_GET['id']);
+    // проверка полученных данных
+    if (!empty($_POST)) {
+        // проверка сделанной ставки
+        if (!empty($_POST['cost']) && ($_POST['cost'] > $data['lot']['start_price']) && is_numeric($_POST['cost'])) {
+            $value = [
+                'date' => date("Y-m-d H:i:s"),
+                'price' => $_POST['cost'],
+                'user_id' => $_SESSION['user']['id'],
+                'lot_id' => $data['lot']['id']
+            ];
 
-        header('Location: /mylots.php');
-    } else {
-        $data_errors_validation['cost'] = 'Некорректная ставка';
+            // вставляем данные о новой ставке
+            $sql_for_insert_rate = 'INSERT INTO rates SET date=?, price=?, user_id=?, lot_id=?';
+            if (insertData($resource, $sql_for_insert_rate, $value)) {
+                header('Location: /mylots.php');
+            } else {
+                header('HTTP/1.0 501 Not Implemented');
+                header('Location: /501.html');
+            }
+
+        } else {
+            $data['errors']['cost'] = 'Некорректная ставка';
+        }
     }
-}
 
-// данные для шаблона
-$data = [
-    'bets' => $bets,
-    'product_category' => $product_category,
-    'data_ads' => $data_ads,
-    'errors' => $data_errors_validation,
-    'my_rates' => $my_rates
-];
-
-/**
- * Проверка на наличие cookie и авторизацию
- * @return bool
- */
-function checkCookieAndAuthorization() {
-    return (isset($_SESSION['user']) && empty(json_decode($_COOKIE['my_rates'], true)[$_GET['id']]));
+    // Проверка на наличие cookie и авторизацию
+    $data['check'] = isset($_SESSION['user']) && $_SESSION['user']['id'] !== $data['rates'][0]['user_id'];
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title><?= $is_valid ? $data['data_ads'][$_GET['id']]['name']: '404' ?></title>
+    <title><?= $is_valid ? $data['lot']['name']: '404' ?></title>
     <link href="css/normalize.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 </head>
@@ -73,11 +76,11 @@ function checkCookieAndAuthorization() {
 <?php if($is_valid)
     print includeTemplate('templates/lot.php', $data);
 else
-    print includeTemplate('templates/404.php', ['product_category' => $product_category]);
+    print includeTemplate('templates/not-found-lot.php');
 ?>
 
 <!-- footer -->
-<?= includeTemplate('templates/footer.php', ['product_category' => $product_category]) ?>
+<?= includeTemplate('templates/footer.php', ['product_category' => $data['product_category']]) ?>
 
 </body>
 </html>

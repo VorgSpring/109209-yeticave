@@ -1,16 +1,22 @@
 <?php
 session_start();
+ini_set('display_errors', 0);
+
 // функция подключения шаблонов
 require_once 'functions.php';
 
-// данные для объявления
-require_once 'data/data.php';
+// проверяем подключение к базе
+$resource = checkConnectToDatabase();
 
-// данные для шаблона
-$data = [
-    'product_category' => $product_category,
-    'data_ads' => $data_ads
-]
+$sql_for_category = 'SELECT * FROM category';
+
+$data['product_category'] = getData($resource, $sql_for_category);
+
+$sql_for_lots = 'SELECT lots.id, lots.name, lots.image_url, lots.start_price, lots.completion_date, 
+                    category.name AS category FROM lots JOIN category ON lots.category_id = category.id ';
+
+$data['data_ads'] = getData($resource, $sql_for_lots);
+
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -29,7 +35,7 @@ $data = [
 <?= includeTemplate('templates/main.php', $data) ?>
 
 <!-- footer -->
-<?= includeTemplate('templates/footer.php', ['product_category' => $product_category]) ?>
+<?= includeTemplate('templates/footer.php', ['product_category' => $data['product_category']]) ?>
 
 </body>
 </html>
