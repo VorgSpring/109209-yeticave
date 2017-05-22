@@ -5,12 +5,18 @@ ini_set('display_errors', 0);
 // функция подключения шаблонов
 require_once 'functions.php';
 
+// подключаем класс для работы с БД
+require_once 'classes/DataBase.php';
+
+// создаем экземпляр для работы с БД
+$dataBase = new DataBase();
+
 // проверяем подключение к базе
-$resource = checkConnectToDatabase();
+$dataBase -> connect();
 
 // категории товаров
 $sql_for_category = 'SELECT * FROM category';
-$data['product_category'] = getData($resource, $sql_for_category);
+$data['product_category'] = $dataBase -> getData($sql_for_category);
 
 /**
  * Регулярное выражение для проверки адреса почты
@@ -48,7 +54,7 @@ if (!empty($_POST)) {
 if(!is_null($email) && !is_null($password)) {
     // ищем пользователя по email
     $sql_for_search_user_email = 'SELECT id, email, name, password, avatar FROM users WHERE email=?';
-    $user = getData($resource, $sql_for_search_user_email, ['email' => $email])[0];
+    $user = $dataBase -> getData($sql_for_search_user_email, ['email' => $email])[0];
     $data['user'] = $user;
     if (!empty($user)) {
         // если пользователь найден, проверяем пароль

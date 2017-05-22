@@ -5,12 +5,18 @@ ini_set('display_errors', 0);
 // функция подключения шаблонов
 require_once 'functions.php';
 
+// подключаем класс для работы с БД
+require_once 'classes/DataBase.php';
+
+// создаем экземпляр для работы с БД
+$dataBase = new DataBase();
+
 // проверяем подключение к базе
-$resource = checkConnectToDatabase();
+$dataBase -> connect();
 
 // категории товаров
 $sql_for_category = 'SELECT * FROM category';
-$data['product_category'] = getData($resource, $sql_for_category);
+$data['product_category'] = $dataBase -> getData($sql_for_category);
 
 // проверка полученных данных
 if (!empty($_POST)) {
@@ -20,7 +26,7 @@ if (!empty($_POST)) {
 
         // ищем пользователя по email
         $sql_for_search_user_email = 'SELECT email FROM users WHERE email=?';
-        $user = getData($resource, $sql_for_search_user_email, ['email' => $email])[0];
+        $user = $dataBase -> $dataBase -> getData($sql_for_search_user_email, ['email' => $email])[0];
 
         if(empty($user)) {
             $data['new_user']['email'] = $email;
@@ -92,7 +98,7 @@ if (!empty($_POST)) {
             'contacts' => $data['new_user']['contacts']
         ];
 
-        $data['new_user']['id'] = insertData($resource, $sql_for_new_user, $value);
+        $data['new_user']['id'] = $dataBase -> insertData($sql_for_new_user, $value);
 
         //$data['new_user'] = $value;
         if($data['new_user']['id']) {

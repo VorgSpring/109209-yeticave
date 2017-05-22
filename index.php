@@ -1,21 +1,27 @@
 <?php
 session_start();
-ini_set('display_errors', 0);
+//ini_set('display_errors', 0);
 
 // функция подключения шаблонов
 require_once 'functions.php';
 
+// подключаем класс для работы с БД
+require_once 'classes/DataBase.php';
+
+// создаем экземпляр для работы с БД
+$dataBase = new DataBase();
+
 // проверяем подключение к базе
-$resource = checkConnectToDatabase();
+$dataBase -> connect();
 
 $sql_for_category = 'SELECT * FROM category';
 
-$data['product_category'] = getData($resource, $sql_for_category);
+$data['product_category'] = $dataBase -> getData($sql_for_category);
 
 $sql_for_lots = 'SELECT lots.id, lots.name, lots.image_url, lots.start_price, lots.completion_date, 
                     category.name AS category FROM lots JOIN category ON lots.category_id = category.id ';
 
-$data['data_ads'] = getData($resource, $sql_for_lots);
+$data['data_ads'] = $dataBase -> getData($sql_for_lots);
 
 ?>
 <!DOCTYPE html>
