@@ -100,7 +100,6 @@ if (!empty($_POST)) {
 
         $data['new_user']['id'] = $dataBase -> insertData($sql_for_new_user, $value);
 
-        //$data['new_user'] = $value;
         if($data['new_user']['id']) {
             $_SESSION['user'] = $data['new_user'];
             header('Location: /index.php');

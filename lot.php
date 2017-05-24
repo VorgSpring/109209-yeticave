@@ -50,7 +50,7 @@ if($is_valid) {
             // вставляем данные о новой ставке
             $sql_for_insert_rate = 'INSERT INTO rates SET date=?, price=?, user_id=?, lot_id=?';
             if ($dataBase -> insertData($sql_for_insert_rate, $value)) {
-                header('Location: /mylots.php');
+                header('Location: /my-lots.php');
             } else {
                 header('HTTP/1.0 501 Not Implemented');
                 header('Location: /501.html');

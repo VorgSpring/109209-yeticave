@@ -120,14 +120,14 @@ class DataBase {
      */
     private function getFormatArray($array) {
         $fields = '';
-        $value = [];
+        $values = [];
 
         foreach ($array as $key => $value) {
             $fields .= "$key=?, ";
-            $value[] = $value;
+            $values[] = $value;
         };
 
-        return [$fields => $value];
+        return [$fields => $values];
     }
 
 }
