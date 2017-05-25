@@ -1,81 +1,86 @@
 <?php
-require_once 'DataBase.php';
 
+/**
+ * Класс для работы с пользователем
+ * Class User
+ */
 class User {
-    /**
-     * Данные о пользователе
-     * @var array
-     */
-    private $user_data = [];
 
     /**
-     * Экземпляр класса DataBase
-     * @var DataBase|null
+     * SQL запрос на получения информации о пользователе по email
+     * @var string
      */
-    private $dataBase = null;
+    private static $sql_for_search_user_email =
+        'SELECT id, email, name, password, avatar FROM users WHERE email=?';
 
     /**
-     * Данные об ошибках
-     * @var array
+     * SQL запрос на добавление нового пользователя
+     * @var string
      */
-    public $login_errors = [];
-
-    /**
-     * User constructor.
-     */
-    function __construct() {
-        $this -> dataBase = new DataBase();
-        $this -> dataBase -> connect();
-    }
-
-    /**
-     * Выполняет аутентификацию пользователя
-     * @param $email
-     * @param $password
-     */
-    public function toAuthenticate($email, $password) {
-        // ищем пользователя по email
-        $sql_for_search_user_email = 'SELECT id, email, name, password, avatar FROM users WHERE email=?';
-        $this -> user_data = $this -> dataBase -> getData($sql_for_search_user_email, ['email' => $email])[0];
-
-        if (!empty($this -> user_data)) {
-            // если пользователь найден, проверяем пароль
-            if (password_verify($password, $this -> user_data['password'])) {
-                $_SESSION['user'] = $this -> user_data;
-            } else {
-                $this -> login_errors['password'] = 'Неверный пароль';
-            }
-        } else {
-            $this -> login_errors['email'] = 'Пользователь с таким e-mail не найден';
-        }
-
-        $this -> getUserData();
-    }
+    private static $sql_for_new_user =
+        'INSERT INTO users SET registration_date=?, email=?, name=?, 
+              password=?, avatar=?, contacts=?';
 
     /**
      * Проверяет аутентифицированность текущего пользователя
      * @return bool
      */
-    public function checkAuthenticate() {
-        if (!isset($_SESSION['user'])) {
-            return false;
-        }
-        return $_SESSION['user']['id'] === $this -> user_data['id'];
+    public static function checkAuthenticate() {
+        return isset($_SESSION['user']);
     }
 
     /**
      * Возвращает информацию о текущем залогиненном пользователе
      * @return array
      */
-    public function getUserData() {
-        return $this -> user_data;
+    public static function getUserData() {
+        if(self::checkAuthenticate()){
+            return DataBase::getInstance() -> getData(self::$sql_for_search_user_email,
+                ['email' => $_SESSION['user']['$email']])[0];
+        }
+
+        return [];
     }
 
     /**
      * Разлогинивает пользователя
      */
-    public function logout() {
+    public static function logout() {
         unset($_SESSION['user']);
-        $this -> user_data = [];
     }
+
+    /**
+     * Выполняет аутентификацию пользователя
+     * @param $email
+     * @param $password
+     * @return array
+     */
+    public static function toAuthenticate($email, $password) {
+        // ищем пользователя по email
+        $user = DataBase::getInstance() -> getData(self::$sql_for_search_user_email,
+            ['email' => $email])[0];
+
+        if (!empty($user)) {
+            // если пользователь найден, проверяем пароль
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['user'] = $user;
+                return $user;
+            } else {
+                return ['password' => 'Неверный пароль'];
+            }
+        } else {
+            return ['email' => 'Пользователь с таким e-mail не найден'];
+        }
+    }
+
+    /**
+     * Добавляет нового пользователя в базу данных
+     * @param $data
+     * @return bool
+     */
+    public static function addNewUser($data) {
+        return DataBase::getInstance() ->
+            insertData(self::$sql_for_new_user, $data) !== false;
+    }
+
 }

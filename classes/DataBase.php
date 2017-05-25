@@ -1,7 +1,9 @@
 <?php
-// Создает подготовленное выражение на основе готового SQL запроса и переданных данных
-require_once 'mysql_helper.php';
 
+/**
+ * Класс для работы с базой данных
+ * Class DataBase
+ */
 class DataBase {
     /**
      * Ресурс соединения
@@ -16,15 +18,31 @@ class DataBase {
     private $error;
 
     /**
+     * Объект соединения с базой данных
+     * @var null
+     */
+    private static $_instance = null;
+
+    /**
+     * Возвращает объект соединения с базой данных
+     * @return DataBase|null
+     */
+    public static function getInstance() {
+        if (self::$_instance === null) {
+            self::$_instance = new self;
+        }
+        return self::$_instance;
+    }
+
+    /**
+     * DataBase constructor.
      * Устанавливает соединение с БД
      */
-    public function connect() {
+    public function __construct() {
         $resource = mysqli_connect('localhost', 'root', '', 'yeticave');
 
         if (!$resource) {
             $this -> error = mysqli_connect_error();
-            header('HTTP/1.0 500 Internal Server Error');
-            header('Location: /500.html');
         } else {
             $this -> resource = $resource;
         }
@@ -46,7 +64,7 @@ class DataBase {
      */
     public function getData($request, $data = []) {
         // получаем подготовленное выражение
-        $prepared_statement = db_get_prepare_stmt($this -> resource, $request, $data);
+        $prepared_statement = $this -> db_get_prepare_stmt($this -> resource, $request, $data);
 
         // выполняем запрос
         if(mysqli_stmt_execute($prepared_statement)) {
@@ -65,7 +83,7 @@ class DataBase {
      */
     public function insertData($request, $data) {
         // получаем подготовленное выражение
-        $prepared_statement = db_get_prepare_stmt($this -> resource, $request, $data);
+        $prepared_statement = $this -> db_get_prepare_stmt($this -> resource, $request, $data);
 
         // выполняем запрос
         if(mysqli_stmt_execute($prepared_statement)) {
@@ -86,13 +104,13 @@ class DataBase {
         // форматируем массив данных
         $format_data = $this -> getFormatArray($data);
         // получаем поля для выражения
-        $update_fields = array_keys($format_data)[0];
+        $update_fields = substr(array_keys($format_data)[0], 0, -2);
         // получаем значения для выражения
         $update_value = array_values($format_data)[0];
 
         // аналогично форматируем массив условий
         $requirement_data = $this -> getFormatArray($requirement);
-        $requirement_fields = array_keys($requirement_data)[0];
+        $requirement_fields = substr(array_keys($requirement_data)[0], 0, -2);
         $requirement_value = array_values($requirement_data)[0];
 
         // объединяем все массивы значений
@@ -102,7 +120,7 @@ class DataBase {
         $request = "UPDATE $table SET $update_fields WHERE $requirement_fields";
 
         // получаем подготовленное выражение
-        $prepared_statement = db_get_prepare_stmt($this -> resource, $request, $update_data);
+        $prepared_statement = $this -> db_get_prepare_stmt($this -> resource, $request, $update_data);
 
         // выполняем запрос
         if (mysqli_stmt_execute($prepared_statement)) {
@@ -110,6 +128,50 @@ class DataBase {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Создает подготовленное выражение на основе готового SQL запроса и переданных данных
+     *
+     * @param $link mysqli Ресурс соединения
+     * @param $sql string SQL запрос с плейсхолдерами вместо значений
+     * @param array $data Данные для вставки на место плейсхолдеров
+     *
+     * @return mysqli_stmt Подготовленное выражение
+     */
+    private function db_get_prepare_stmt($link, $sql, $data = []) {
+        $stmt = mysqli_prepare($link, $sql);
+
+        if ($data) {
+            $types = '';
+            $stmt_data = [];
+
+            foreach ($data as $value) {
+                $type = null;
+
+                if (is_int($value)) {
+                    $type = 'd';
+                }
+                else if (is_string($value)) {
+                    $type = 's';
+                }
+                else if (is_double($value)) {
+                    $type = 'd';
+                }
+
+                if ($type) {
+                    $types .= $type;
+                    $stmt_data[] = $value;
+                }
+            }
+
+            $values = array_merge([$stmt, $types], $stmt_data);
+
+            $func = 'mysqli_stmt_bind_param';
+            $func(...$values);
+        }
+
+        return $stmt;
     }
 
     /**
@@ -129,5 +191,4 @@ class DataBase {
 
         return [$fields => $values];
     }
-
 }

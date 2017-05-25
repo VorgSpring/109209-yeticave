@@ -125,8 +125,10 @@ if (!empty($_POST)) {
 
 <!-- main -->
 <?php if(empty($_POST) || (count($data['errors']) !== 0))
-    print includeTemplate('templates/sign-up.php', $data);
+    print 0%2;
 ?>
+
+
 
 <!-- footer -->
 <?= includeTemplate('templates/footer.php', ['product_category' => $data['product_category']]) ?>
