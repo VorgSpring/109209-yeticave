@@ -12,7 +12,7 @@ class Category {
     private static $sql_for_category = 'SELECT * FROM category';
 
     /**
-     * SQL запрос на получения категории товара по названию
+     * SQL запрос на получения id категории товара по названию
      * @var string
      */
     private static $sql_for_id_category = 'SELECT id FROM category WHERE name=?';
