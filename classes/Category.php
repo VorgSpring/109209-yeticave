@@ -12,7 +12,7 @@ class Category {
     private static $sql_for_category = 'SELECT * FROM category';
 
     /**
-     * SQL запрос на получения категории товара по id
+     * SQL запрос на получения категории товара по названию
      * @var string
      */
     private static $sql_for_id_category = 'SELECT id FROM category WHERE name=?';
@@ -21,7 +21,7 @@ class Category {
      * Возвращает все категории товаров
      * @return array
      */
-    public static function getAllCategory() {
+    public static function getAllCategories() {
         return DataBase::getInstance() -> getData(self::$sql_for_category);
     }
 
@@ -30,7 +30,7 @@ class Category {
      * @param string $name
      * @return array
      */
-    public static function getCategory($name) {
+    public static function getCategoryId($name) {
         return DataBase::getInstance() -> getData(self::$sql_for_id_category, $name);
     }
 }

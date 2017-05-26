@@ -8,23 +8,17 @@ require_once 'functions.php';
 // проверка авторизации
 checkAuthorization();
 
-// подключаем класс для работы с БД
-require_once 'classes/DataBase.php';
-
-// создаем экземпляр для работы с БД
-$dataBase = new DataBase();
-
 // проверяем подключение к базе
-$dataBase -> connect();
+$resource = checkConnectToDatabase();
 
 // категории товаров
 $sql_for_category = 'SELECT * FROM category';
-$data['product_category'] = $dataBase -> getData($sql_for_category);
+$data['product_category'] = getData($resource, $sql_for_category);
 
 // данные для шаблона
 $sql_for_my_rates = 'SELECT rates.price, rates.date, rates.lot_id, lots.image_url AS image, lots.name AS name 
                         FROM rates JOIN lots ON rates.lot_id=lots.id WHERE rates.user_id=?';
-$data['my_rates'] = $dataBase -> getData($sql_for_my_rates, ['user_id' => $_SESSION['user']['id']]);
+$data['my_rates'] = getData($resource, $sql_for_my_rates, ['user_id' => $_SESSION['user']['id']]);
 
 
 ?>

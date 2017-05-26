@@ -8,18 +8,12 @@ require_once 'functions.php';
 // проверка авторизации
 checkAuthorization();
 
-// подключаем класс для работы с БД
-require_once 'classes/DataBase.php';
-
-// создаем экземпляр для работы с БД
-$dataBase = new DataBase();
-
 // проверяем подключение к базе
-$dataBase -> connect();
+$resource = checkConnectToDatabase();
 
 // категории товаров
 $sql_for_category = 'SELECT * FROM category';
-$data['product_category'] = $dataBase -> getData($sql_for_category);
+$data['product_category'] = getData($resource, $sql_for_category);
 
 /**
  * Регулярное выражение для проверки формата даты
@@ -69,7 +63,7 @@ if (!empty($_POST)) {
         // получаем id выбранной категории
         $sql_for_id_category = 'SELECT id FROM category WHERE name=?';
         $data['new_lot']['category_id'] =
-            $dataBase -> getData($sql_for_id_category, ['name' => $_POST['category']])[0]['id'];
+            getData($resource, $sql_for_id_category, ['name' => $_POST['category']])[0]['id'];
 
         if(!empty($data['new_lot']['category_id'])) {
             $data['new_lot']['category'] = $_POST['category'];
@@ -140,7 +134,7 @@ if(!empty($_POST) && (count($data['errors']) === 0)) {
         'category_id' => $data['new_lot']['category_id']
     ];
 
-    if($dataBase -> insertData($sql_for_new_lot, $value)) {
+    if(insertData($resource, $sql_for_new_lot, $value)) {
         print includeTemplate('templates/my-lot.php', $data['new_lot']);
     } else {
         header('HTTP/1.0 501 Not Implemented');

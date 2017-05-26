@@ -21,17 +21,17 @@ class DataBase {
      * Объект соединения с базой данных
      * @var null
      */
-    private static $_instance = null;
+    private static $instance = null;
 
     /**
      * Возвращает объект соединения с базой данных
-     * @return DataBase|null
+     * @return DataBase
      */
     public static function getInstance() {
-        if (self::$_instance === null) {
-            self::$_instance = new self;
+        if (self::$instance === null) {
+            self::$instance = new self;
         }
-        return self::$_instance;
+        return self::$instance;
     }
 
     /**
