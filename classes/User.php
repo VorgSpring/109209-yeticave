@@ -59,18 +59,21 @@ class User {
         // ищем пользователя по email
         $user = DataBase::getInstance() -> getData(self::$sql_for_search_user_email,
             ['email' => $email])[0];
+        // информация об ошибках
+        $error = [];
 
         if (!empty($user)) {
             // если пользователь найден, проверяем пароль
             if (password_verify($password, $user['password'])) {
                 $_SESSION['user'] = $user;
-                return $user;
             } else {
-                return ['password' => 'Неверный пароль'];
+                $error['password'] = 'Неверный пароль';
             }
         } else {
-            return ['email' => 'Пользователь с таким e-mail не найден'];
+            $error['email'] = 'Пользователь с таким e-mail не найден';
         }
+
+        return $error;
     }
 
     /**

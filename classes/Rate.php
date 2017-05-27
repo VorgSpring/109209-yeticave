@@ -21,6 +21,13 @@ class Rate {
               JOIN lots ON rates.lot_id=lots.id WHERE rates.user_id=?';
 
     /**
+     * SQL запрос на информацию о максимальной ставке на лот
+     * @var string
+     */
+    private static $sql_for_max_rate = 'SELECT price AS max_price FROM rates 
+        WHERE lot_id=? ORDER BY price DESC LIMIT 1';
+
+    /**
      * Возвращает информацию о ставках на лот
      * @param $lot_id
      * @return array
@@ -36,5 +43,14 @@ class Rate {
      */
     public static function getUserRates($user_id) {
         return DataBase::getInstance() -> getData(self::$sql_for_user_rates, $user_id);
+    }
+
+    /**
+     * Возвращает максимальную ставку на лот
+     * @param $lot_id
+     * @return array
+     */
+    public static function getMaxRate($lot_id) {
+        return DataBase::getInstance() -> getData(self::$sql_for_max_rate, $lot_id);
     }
 }

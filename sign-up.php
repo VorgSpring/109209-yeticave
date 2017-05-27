@@ -50,7 +50,7 @@ if (!empty($_POST)) {
     if (!empty($_POST['message'])) {
         $data['new_user']['contacts'] = htmlspecialchars($_POST['message']);
     } else {
-        $data['errors']['message'] = 'Введите описание лота';
+        $data['errors']['message'] = 'Введите контакты';
     }
 
     // проверка загружаемой фотографии
