@@ -4,19 +4,34 @@ ini_set('display_errors', 0);
 
 // функция подключения шаблонов
 require_once 'functions.php';
+// класс для работы с категориями
+require_once 'classes/Category.php';
+// класс для работы с лотами
+require_once 'classes/Lot.php';
+// класс для работы с формой поиска
+require_once 'classes/forms/SearchForm.php';
 
 // проверяем подключение к базе
-$resource = checkConnectToDatabase();
+checkConnectToDatabase();
 
-$sql_for_category = 'SELECT * FROM category';
+// категории товаров
+$data['product_category'] = Category::getAllCategories();
 
-$data['product_category'] = getData($resource, $sql_for_category);
-
-$sql_for_lots = 'SELECT lots.id, lots.name, lots.image_url, lots.start_price, lots.completion_date, 
-                    category.name AS category FROM lots JOIN category ON lots.category_id = category.id ';
-
-$data['data_ads'] = getData($resource, $sql_for_lots);
-
+// информация о лотах
+if (!empty($_GET['category_id'])) {
+    $data['data_ads'] = Lot::getLots($_GET['category_id']);
+} elseif(!empty($_GET['search'])) {
+    // создаем объект формы авторизации
+    $form = new SearchForm($_GET);
+    // проверяем правильность введенных данных
+    if($form->checkValid()) {
+        // получаем данные с формы
+        $form_data = $form->getData();
+        $data['data_ads'] = Lot::getLotByName($form_data['search']);
+    }
+} else {
+    $data['data_ads'] = Lot::getAllLots();
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -29,7 +44,7 @@ $data['data_ads'] = getData($resource, $sql_for_lots);
 <body>
 
 <!-- header -->
-<?= includeTemplate('templates/header.php', ['is_start_page' => true]) ?>
+<?= includeTemplate('templates/header.php') ?>
 
 <!-- main -->
 <?= includeTemplate('templates/main.php', $data) ?>

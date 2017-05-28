@@ -4,66 +4,42 @@ ini_set('display_errors', 0);
 
 // функция подключения шаблонов
 require_once 'functions.php';
+// класс для работы с категориями
+require_once 'classes/Category.php';
+// класс для работы с пользователем
+require_once 'classes/User.php';
+// класс для работы с формой авторизации
+require_once 'classes/forms/AuthorizationForm.php';
 
 // проверяем подключение к базе
-$resource = checkConnectToDatabase();
+checkConnectToDatabase();
 
 // категории товаров
-$sql_for_category = 'SELECT * FROM category';
-$data['product_category'] = getData($resource, $sql_for_category);
-
-/**
- * Регулярное выражение для проверки адреса почты
- * @type string
- */
-const REG_EXP = '/.+@.+\..+/i';
-
-// данные об ошибках
-$data['errors'] = [];
-
-// адрес почты пользователя
-$email = null;
-
-// пароль пользователя
-$password = null;
+$data['product_category'] = Category::getAllCategories();
 
 // проверка полученных данных
 if (!empty($_POST)) {
-    // проверка почты
-    if (!empty($_POST['email']) && preg_match(REG_EXP, $_POST['email'])) {
-        $email = htmlspecialchars($_POST['email']);
-    } else {
-        $data['errors']['email'] = 'Введите e-mail';
-    }
-
-    // проверка пароля
-    if (!empty($_POST['password'])) {
-        $password = htmlspecialchars($_POST['password']);
-    } else {
-        $data['errors']['password'] = 'Введите пароль';
-    }
-}
-
-// если данные введены верно
-if(!is_null($email) && !is_null($password)) {
-    // ищем пользователя по email
-    $sql_for_search_user_email = 'SELECT id, email, name, password, avatar FROM users WHERE email=?';
-    $user = getData($resource, $sql_for_search_user_email, ['email' => $email])[0];
-    $data['user'] = $user;
-    if (!empty($user)) {
-        // если пользователь найден, проверяем пароль
-        if (password_verify($password, $user['password'])) {
-            $_SESSION['user'] = $user;
+    // создаем объект формы авторизации
+    $form = new AuthorizationForm($_POST);
+    // проверяем правильность введенных данных
+    if($form->checkValid()) {
+        // получаем данные с формы
+        $form_data = $form->getData();
+        // выполняем аутентификацию пользователя
+        $errors_authenticate = User::toAuthenticate($form_data['email'], $form_data['password']);
+        // если аутентификация прошла успешно
+        if(empty($errors_authenticate)) {
             header("Location: /index.php");
         } else {
-            $data['errors']['password'] = 'Неверный пароль';
+            // если аутентификация прошла не успешно
+            $data['errors'] = $errors_authenticate;
         }
     } else {
-        $data['errors']['email'] = 'Пользователь с таким e-mail не найден';
+        // получаем ошибки валидации
+        $data['errors'] = $form->getErrors();
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>

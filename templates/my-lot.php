@@ -14,7 +14,7 @@
                 <div class="lot-item__state">
                     Дата завершения:
                     <div class="lot-item__timer lot-item__timer--date timer">
-                        <?= $data['completion_date'] ?>
+                        <?= date("d.m.Y", strtotime($data['completion_date'])) ?>
                     </div>
                     <div class="lot-item__cost-state">
                         <div class="lot-item__rate">

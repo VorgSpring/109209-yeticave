@@ -5,7 +5,9 @@
         <ul class="promo__list">
             <?php foreach ($data['product_category'] as $item): ?>
                 <li class="promo__item promo__item--<?= $item['id'] ?>">
-                    <a class="promo__link" href="all-lots.html"><?= $item['name'] ?></a>
+                    <a class="promo__link" href="./?category_id=<?= $item['id'] ?>">
+                        <?= $item['name'] ?>
+                    </a>
                 </li>
             <?php endforeach; ?>
         </ul>
@@ -16,7 +18,9 @@
             <select class="lots__select">
                 <option>Все категории</option>
                 <?php foreach ($data['product_category'] as $item): ?>
-                    <option><?= $item['name'] ?></option>
+                    <option>
+                        <?= $item['name'] ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </div>

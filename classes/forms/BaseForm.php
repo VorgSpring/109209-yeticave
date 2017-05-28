@@ -79,7 +79,7 @@ class BaseForm {
         if (!(in_array($image_extension, self::$acceptable_formats_for_images))) {
             $this->errors['image'] = 'Загрузите фото в формате "jpg", "jpeg" или "png"';
         } elseif (move_uploaded_file($image['tmp_name'], $image_name)) {
-            $this->data['image_url'] = $image_name;
+            $this->data['image'] = $image_name;
         } else {
             $this->errors['image'] = 'Возникла ошибка при загрузке файла';
         }
@@ -98,7 +98,7 @@ class BaseForm {
      * Возвращает данные с формы
      * @return array
      */
-    protected function getData() {
+    public function getData() {
         return $this->data;
     }
 
@@ -106,7 +106,7 @@ class BaseForm {
      * Возвращаяет ошибки валидации
      * @return array
      */
-    protected function getErrors() {
+    public function getErrors() {
         return $this->errors;
     }
 
@@ -114,7 +114,7 @@ class BaseForm {
      * Проверяет валидацию формы
      * @return mixed
      */
-    protected function checkValid() {
+    public function checkValid() {
         return empty($this->errors);
     }
 }

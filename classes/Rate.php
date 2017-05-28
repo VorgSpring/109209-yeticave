@@ -28,12 +28,19 @@ class Rate {
         WHERE lot_id=? ORDER BY price DESC LIMIT 1';
 
     /**
+     * SQL запрос на добавление новой ставке
+     * @var string
+     */
+    private static $sql_for_insert_rate = 'INSERT INTO rates 
+        SET date=?, price=?, user_id=?, lot_id=?';
+
+    /**
      * Возвращает информацию о ставках на лот
      * @param $lot_id
      * @return array
      */
     public static function getAllRatesForLot($lot_id) {
-        return DataBase::getInstance() -> getData(self::$sql_for_rates, $lot_id);
+        return DataBase::getInstance() -> getData(self::$sql_for_rates, ['rates.lot_id' => $lot_id]);
     }
 
     /**
@@ -42,7 +49,7 @@ class Rate {
      * @return array
      */
     public static function getUserRates($user_id) {
-        return DataBase::getInstance() -> getData(self::$sql_for_user_rates, $user_id);
+        return DataBase::getInstance() -> getData(self::$sql_for_user_rates, ['rates.user_id' => $user_id]);
     }
 
     /**
@@ -51,6 +58,16 @@ class Rate {
      * @return array
      */
     public static function getMaxRate($lot_id) {
-        return DataBase::getInstance() -> getData(self::$sql_for_max_rate, $lot_id);
+        return DataBase::getInstance() -> getData(self::$sql_for_max_rate, ['lot_id' => $lot_id]);
+    }
+
+    /**
+     * Добавляет новую ставку
+     * @param $data
+     * @return bool
+     */
+    public static function addNewRate($data){
+        return DataBase::getInstance() ->
+            insertData(self::$sql_for_insert_rate, $data) !== false;
     }
 }

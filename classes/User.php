@@ -30,16 +30,13 @@ class User {
     }
 
     /**
-     * Возвращает информацию о текущем залогиненном пользователе
+     * Возвращает информацию о пользователе по email
+     * @param $email
      * @return array
      */
-    public static function getUserData() {
-        if(self::checkAuthenticate()){
-            return DataBase::getInstance() -> getData(self::$sql_for_search_user_email,
-                ['email' => $_SESSION['user']['$email']])[0];
-        }
-
-        return [];
+    public static function getUserData($email) {
+        return DataBase::getInstance() -> getData(self::$sql_for_search_user_email,
+            ['email' => $email])[0];
     }
 
     /**

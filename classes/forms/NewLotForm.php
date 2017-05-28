@@ -1,4 +1,7 @@
 <?php
+// базовый класс для работы с формами
+require_once 'BaseForm.php';
+
 /**
  * Класс для работы с формой добавления нового лота
  * Class NewLotForm
@@ -8,13 +11,14 @@ class NewLotForm extends BaseForm {
      * Регулярное выражение для проверки формата даты
      * @type string
      */
-    const REG_EXP = '/(0[1-9]|1[0-9]|2[0-9]|3[01]).(0[1-9]|1[012]).[0-9]{4}/';
+    private const REG_EXP = '/(0[1-9]|1[0-9]|2[0-9]|3[01]).(0[1-9]|1[012]).[0-9]{4}/';
 
     /**
      * NewLotForm constructor.
      * @param $data
+     * @param $image
      */
-    public function __construct($data) {
+    public function __construct($data, $image) {
         // проверка наименования
         $this->checkInput($data['name'], 'name', 'Введите наименование лота');
         // проверка описания
@@ -24,11 +28,11 @@ class NewLotForm extends BaseForm {
         //проверка поля шага ставки
         $this->checkNumberInput($data['step_rate'], 'step_rate');
         // проверка даты
-        $this->checkDate($data['lot-date']);
+        $this->checkDate($data['date']);
         // проверка выбранной категории
         $this->checkCategory($data['category']);
         // проверка загружаемой фотографии
-        $this->checkImage($data['image'], 'img/users');
+        $this->checkImage($image, 'img/lots');
     }
 
     /**
@@ -36,7 +40,7 @@ class NewLotForm extends BaseForm {
      * @param $value
      */
     private function checkDate($value) {
-        if(!empty($value) && preg_match(REG_EXP, $_POST['lot-date'])) {
+        if(!empty($value) && preg_match(self::REG_EXP, $value)) {
             $this->data['completion_date'] = $value;
         } else {
             $this->errors['date'] = 'Введите дату в формате "дд.мм.гггг"';

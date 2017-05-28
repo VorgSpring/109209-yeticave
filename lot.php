@@ -4,59 +4,72 @@ ini_set('display_errors', 0);
 
 // функция подключения шаблонов
 require_once 'functions.php';
+// класс для работы с категориями
+require_once 'classes/Category.php';
+// класс для работы с лотами
+require_once 'classes/Lot.php';
+// класс для работы со ставками
+require_once 'classes/Rate.php';
+// класс для работы с формой ставки
+require_once 'classes/forms/RatesForm.php';
 
 // проверяем подключение к базе
-$resource = checkConnectToDatabase();
+checkConnectToDatabase();
 
 // категории товаров
-$sql_for_category = 'SELECT * FROM category';
-$data['product_category'] = getData($resource, $sql_for_category);
+$data['product_category'] = Category::getAllCategories();
 
 // данные о лоте
-$sql_for_lot = 'SELECT lots.name, lots.id, lots.image_url, lots.start_price, lots.completion_date, lots.description,
-                    category.name AS category FROM lots JOIN category ON lots.category_id = category.id 
-                      WHERE lots.id=?';
-$data['lot'] = getData($resource, $sql_for_lot, ['lots.id' => $_GET['id']])[0];
+$data['lot'] = Lot::getLot($_GET['id']);
 
 // проверка валидности get запроса
 $is_valid = is_numeric($_GET['id']) && !empty($data['lot']);
 
 if($is_valid) {
-    // данные об ошибках
-    $data['errors'] = [];
-
-    // данные о ставках
-    $sql_for_rates = 'SELECT rates.price, rates.date, rates.user_id, users.name AS user FROM rates 
-                        JOIN users ON rates.user_id = users.id WHERE rates.lot_id=? ORDER BY rates.date DESC ';
-    $data['rates'] = getData($resource, $sql_for_rates, ['rates.lot_id' => $_GET['id']]);
+    // получаем данные о всех ставках на текущий лот
+    $data['rates'] = Rate::getAllRatesForLot($data['lot']['id']);
 
     // проверка полученных данных
     if (!empty($_POST)) {
-        // проверка сделанной ставки
-        if (!empty($_POST['cost']) && ($_POST['cost'] > $data['lot']['start_price']) && is_numeric($_POST['cost'])) {
+        // формируем данные для объекта новой ставки
+        $data_for_form = [
+            'price' => $_POST['cost'],
+            'start_price' => $data['lot']['start_price']
+        ];
+        // создаем объект формы новой ставки
+        $form = new RatesForm($data_for_form);
+
+        // проверяем правильность введенных данных
+        if($form->checkValid()) {
+            // получаем данные с формы
+            $form_data = $form->getData();
+            // формируем данные для вставке в базу
             $value = [
                 'date' => date("Y-m-d H:i:s"),
-                'price' => $_POST['cost'],
+                'price' => $form_data['price'],
                 'user_id' => $_SESSION['user']['id'],
                 'lot_id' => $data['lot']['id']
             ];
 
-            // вставляем данные о новой ставке
-            $sql_for_insert_rate = 'INSERT INTO rates SET date=?, price=?, user_id=?, lot_id=?';
-            if (insertData($resource, $sql_for_insert_rate, $value)) {
-                header('Location: /mylots.php');
+            // если вставка прошла успешно
+            if(Rate::addNewRate($value)) {
+                Lot::setNewPrice($value);
+                header('Location: /my-lots.php');
             } else {
-                header('HTTP/1.0 501 Not Implemented');
-                header('Location: /501.html');
+                // если вставка прошла не успешно
+                header('HTTP/1.0 500 Internal Server Error');
+                header('Location: /500.html');
             }
 
         } else {
-            $data['errors']['cost'] = 'Некорректная ставка';
+            // если форма заполнена не корректно, получаем ошибки валидации
+            $data['errors'] = $form->getErrors();
         }
     }
 
-    // Проверка на наличие cookie и авторизацию
+    // проверка на наличие уже сделанной ставки и авторизации
     $data['check'] = isset($_SESSION['user']) && $_SESSION['user']['id'] !== $data['rates'][0]['user_id'];
+    //print_r($data);
 }
 ?>
 <!DOCTYPE html>

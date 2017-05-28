@@ -1,4 +1,7 @@
 <?php
+// базовый класс для работы с формами
+require_once 'BaseForm.php';
+
 /**
  * Класс для работы с формой регистрации
  * Class RegistrationForm
@@ -7,8 +10,9 @@ class RegistrationForm extends BaseForm {
     /**
      * RegistrationForm constructor.
      * @param $data
+     * @param $image
      */
-    public function __construct($data) {
+    public function __construct($data, $image) {
         // проверка почты
         $this->checkEmail($data['email']);
         // проверка пароля
@@ -16,8 +20,8 @@ class RegistrationForm extends BaseForm {
         // проверка имени
         $this->checkInput($data['name'], 'name', 'Введите имя');
         // проверка контактных данных
-        $this->checkInput($data['message'], 'message', 'Введите контакты');
+        $this->checkInput($data['contacts'], 'contacts', 'Введите контакты');
         // проверка загружаемой фотографии
-        $this->checkImage($data['image'], 'img/users');
+        $this->checkImage($image, 'img/users');
     }
 }

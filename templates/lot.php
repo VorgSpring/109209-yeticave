@@ -39,12 +39,12 @@
                     <?php if ($data['check']): ?>
                         <form class="lot-item__form <?= $data['errors']? 'form--invalid': '' ?>"
                               action="lot.php?<?= 'id='.$_GET['id']?>" method="post">
-                            <p class="lot-item__form-item <?= $data['errors']['cost']? 'form__item--invalid': '' ?>">
+                            <p class="lot-item__form-item <?= $data['errors']['price']? 'form__item--invalid': '' ?>">
                                 <label for="cost">Ваша ставка</label>
                                 <input id="cost" type="number" name="cost"
                                        min="<?= $data['lot']['start_price'] ?>"
                                        placeholder="<?= $data['lot']['start_price'] ?>">
-                                <span class="form__error"><?= $data['errors']['cost'] ?></span>
+                                <span class="form__error"><?= $data['errors']['price'] ?></span>
                             </p>
                             <button type="submit" class="button">Сделать ставку</button>
                         </form>

@@ -1,4 +1,7 @@
 <?php
+// базовый класс для работы с формами
+require_once 'BaseForm.php';
+
 /**
  * Класс для работы с формой авторизации
  * Class AuthorizationForm
