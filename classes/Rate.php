@@ -67,7 +67,6 @@ class Rate {
      * @return bool
      */
     public static function addNewRate($data){
-        return DataBase::getInstance() ->
-            insertData(self::$sql_for_insert_rate, $data) !== false;
+        return DataBase::getInstance() -> insertData(self::$sql_for_insert_rate, $data);
     }
 }

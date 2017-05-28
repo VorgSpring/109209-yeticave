@@ -22,7 +22,7 @@ if (!empty($_POST)) {
     // создаем объект формы авторизации
     $form = new AuthorizationForm($_POST);
     // проверяем правильность введенных данных
-    if($form->checkValid()) {
+    if($form->validate()) {
         // получаем данные с формы
         $form_data = $form->getData();
         // выполняем аутентификацию пользователя

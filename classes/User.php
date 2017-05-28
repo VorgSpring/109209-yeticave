@@ -80,7 +80,7 @@ class User {
      */
     public static function addNewUser($data) {
         return DataBase::getInstance() ->
-            insertData(self::$sql_for_new_user, $data) !== false;
+            insertData(self::$sql_for_new_user, $data);
     }
 
 }

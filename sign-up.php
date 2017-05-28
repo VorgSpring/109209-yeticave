@@ -19,11 +19,13 @@ $data['product_category'] = Category::getAllCategories();
 
 // проверка полученных данных
 if (!empty($_POST)) {
+    // формируем данные для объекта новой ставки
+    $data_for_form = array_merge($_POST, ['image' => $_FILES['image']]);
     // создаем объект формы регистрации
-    $form = new RegistrationForm($_POST, $_FILES['image']);
+    $form = new RegistrationForm($data_for_form);
 
     // проверяем правильность введенных данных
-    if($form->checkValid()) {
+    if($form->validate()) {
         // получаем данные из формы
         $form_data = $form->getData();
         // исщем пользователя с веденным email

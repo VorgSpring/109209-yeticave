@@ -12,19 +12,16 @@ class RatesForm extends BaseForm {
      * @param $data
      */
     public function __construct($data) {
-        $this->checkRate($data['price'], $data['start_price']);
+       $this->data['price'] = $data['price'];
+        $this->data['start_price'] = $data['start_price'];
     }
 
     /**
-     * Проверяет сделанную ставку
-     * @param $value
-     * @param $price
+     * Валидация формы
+     * @return bool
      */
-    private function checkRate($value, $price) {
-        if(!empty($value) && is_numeric($value) && $value > $price) {
-            $this->data['price'] = $value;
-        } else {
-            $this->errors['price'] = 'Некорректная ставка';
-        }
+    public function validate() {
+        $this->checkRate($this->data['price'], $this->data['start_price']);
+        return $this->checkValid();
     }
 }

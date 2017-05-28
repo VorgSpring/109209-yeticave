@@ -40,7 +40,7 @@ if($is_valid) {
         $form = new RatesForm($data_for_form);
 
         // проверяем правильность введенных данных
-        if($form->checkValid()) {
+        if($form->validate()) {
             // получаем данные с формы
             $form_data = $form->getData();
             // формируем данные для вставке в базу

@@ -82,7 +82,7 @@ class Lot {
      * @param $data
      * @return bool|number
      */
-    public static function addNewLot($data) {
+    public static function createNewLot($data) {
         return DataBase::getInstance() -> insertData(self::$sql_for_new_lot, $data);
     }
 

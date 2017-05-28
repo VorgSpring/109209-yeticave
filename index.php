@@ -24,7 +24,7 @@ if (!empty($_GET['category_id'])) {
     // создаем объект формы авторизации
     $form = new SearchForm($_GET);
     // проверяем правильность введенных данных
-    if($form->checkValid()) {
+    if($form->validate()) {
         // получаем данные с формы
         $form_data = $form->getData();
         $data['data_ads'] = Lot::getLotByName($form_data['search']);
@@ -47,7 +47,11 @@ if (!empty($_GET['category_id'])) {
 <?= includeTemplate('templates/header.php') ?>
 
 <!-- main -->
-<?= includeTemplate('templates/main.php', $data) ?>
+<?php if(!empty($data['data_ads']))
+    print includeTemplate('templates/main.php', $data);
+else
+    print includeTemplate('templates/not-found-lot.php');
+?>
 
 <!-- footer -->
 <?= includeTemplate('templates/footer.php', ['product_category' => $data['product_category']]) ?>

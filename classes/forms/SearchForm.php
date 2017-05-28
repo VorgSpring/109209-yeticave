@@ -12,6 +12,15 @@ class SearchForm extends BaseForm {
      * @param $data
      */
     public function __construct($data) {
-        $this->checkInput((string)$data['search'], 'search');
+        $this->data['search'] = $data['search'];
+    }
+
+    /**
+     * Валидация формы
+     * @return bool
+     */
+    public function validate() {
+        $this->checkInput($this->data['search'], 'search');
+        return $this->checkValid();
     }
 }

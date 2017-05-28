@@ -86,6 +86,49 @@ class BaseForm {
     }
 
     /**
+     * Проверяет введенную дату
+     * @param $value
+     */
+    protected function checkDate($value) {
+        if(!empty($value) && preg_match(self::REG_EXP, $value)) {
+            $this->data['completion_date'] = $value;
+        } else {
+            $this->errors['date'] = 'Введите дату в формате "дд.мм.гггг"';
+        }
+    }
+
+    /**
+     * Проверяет выбранную категорию
+     * @param $name
+     */
+    protected function checkCategory($name) {
+        if(!empty($name)) {
+            $id = Category::getCategoryId($name);
+            if(!empty($id)) {
+                $this->data['category'] = $name;
+                $this->data['category_id'] = $id[0]['id'];
+            } else {
+                $this->errors['category'] = 'Выбрана некорректная категория';
+            }
+        } else {
+            $this->errors['category'] = 'Выберете категорию';
+        }
+    }
+
+    /**
+     * Проверяет сделанную ставку
+     * @param $value
+     * @param $price
+     */
+    protected function checkRate($value, $price) {
+        if(!empty($value) && is_numeric($value) && $value > $price) {
+            $this->data['price'] = $value;
+        } else {
+            $this->errors['price'] = 'Некорректная ставка';
+        }
+    }
+
+    /**
      * Устанавливает ошибку
      * @param $name
      * @param $value

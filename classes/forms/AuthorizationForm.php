@@ -12,9 +12,20 @@ class AuthorizationForm extends BaseForm {
      * @param $data
      */
     public function __construct($data) {
+        $this->data['email'] = $data['email'];
+        $this->data['password'] = $data['password'];
+    }
+
+    /**
+     * Валидация формы
+     * @return bool
+     */
+    public function validate() {
         // проверка почты
-        $this->checkEmail($data['email']);
+        $this->checkEmail($this->data['email']);
         // проверка пароля
-        $this->checkInput($data['password'], 'password', 'Введите пароль');
+        $this->checkInput($this->data['password'], 'password', 'Введите пароль');
+
+        return $this->checkValid();
     }
 }

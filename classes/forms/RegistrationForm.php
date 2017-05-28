@@ -10,18 +10,31 @@ class RegistrationForm extends BaseForm {
     /**
      * RegistrationForm constructor.
      * @param $data
-     * @param $image
      */
-    public function __construct($data, $image) {
+    public function __construct($data) {
+        $this->data['email'] = $data['email'];
+        $this->data['password'] = $data['password'];
+        $this->data['name'] = $data['name'];
+        $this->data['contacts'] = $data['contacts'];
+        $this->data['image'] = $data['image'];
+    }
+
+    /**
+     * Валидация формы
+     * @return bool
+     */
+    public function validate() {
         // проверка почты
-        $this->checkEmail($data['email']);
+        $this->checkEmail($this->data['email']);
         // проверка пароля
-        $this->checkInput($data['password'], 'password', 'Введите пароль');
+        $this->checkInput($this->data['password'], 'password', 'Введите пароль');
         // проверка имени
-        $this->checkInput($data['name'], 'name', 'Введите имя');
+        $this->checkInput($this->data['name'], 'name', 'Введите имя');
         // проверка контактных данных
-        $this->checkInput($data['contacts'], 'contacts', 'Введите контакты');
+        $this->checkInput($this->data['contacts'], 'contacts', 'Введите контакты');
         // проверка загружаемой фотографии
-        $this->checkImage($image, 'img/users');
+        $this->checkImage($this->data['image'], 'img/users');
+
+        return $this->checkValid();
     }
 }

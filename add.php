@@ -1,6 +1,6 @@
 <?php
 session_start();
-ini_set('display_errors', 0);
+//\ini_set('display_errors', 0);
 
 // функция подключения шаблонов
 require_once 'functions.php';
@@ -19,13 +19,17 @@ checkConnectToDatabase();
 
 // категории товаров
 $data['product_category'] = Category::getAllCategories();
+// объект формы
+$form = null;
 
 if (!empty($_POST)) {
+    // формируем данные для объекта новой ставки
+    $data_for_form = array_merge($_POST, ['image' => $_FILES['image']]);
     // создаем объект формы добавления нового лота
-    $form = new NewLotForm($_POST, $_FILES['image']);
+    $form = new NewLotForm($data_for_form);
 
     // проверяем правильность введенных данных
-    if($form->checkValid()) {
+    if($form->validate()) {
         // получаем данные из формы
         $form_data = $form->getData();
         // формируем данные для вставке в базу
@@ -41,8 +45,12 @@ if (!empty($_POST)) {
             'category_id' => $form_data['category_id']
         ];
 
-        // если вставка прошла не успешно
-        if(!Lot::addNewLot($data['new_lot'])) {
+        // если вставка прошла успешно
+        if(Lot::createNewLot($data['new_lot'])) {
+            // добавляем имя категории в объект
+            $data['new_lot']['category'] = $form_data['category'];
+        } else {
+            // если вставка прошла не успешно
             header('HTTP/1.0 500 Internal Server Error');
             header('Location: /500.html');
         }
@@ -67,7 +75,7 @@ if (!empty($_POST)) {
 
 <!-- main -->
 <?php
-if(!empty($_POST) && (count($data['errors']) === 0)) {
+if(!empty($_POST) && $form->checkValid()) {
     print includeTemplate('templates/my-lot.php', $data['new_lot']);
 } else {
     print includeTemplate('templates/add-lot.php', $data);

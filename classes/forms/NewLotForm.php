@@ -16,50 +16,37 @@ class NewLotForm extends BaseForm {
     /**
      * NewLotForm constructor.
      * @param $data
-     * @param $image
      */
-    public function __construct($data, $image) {
+    public function __construct($data) {
+        $this->data['name'] = $data['name'];
+        $this->data['description'] = $data['description'];
+        $this->data['start_price'] = $data['start_price'];
+        $this->data['step_rate'] = $data['step_rate'];
+        $this->data['date'] = $data['date'];
+        $this->data['category'] = $data['category'];
+        $this->data['image'] = $data['image'];
+    }
+
+    /**
+     * Валидация формы
+     * @return bool
+     */
+    public function validate() {
         // проверка наименования
-        $this->checkInput($data['name'], 'name', 'Введите наименование лота');
+        $this->checkInput($this->data['name'], 'name', 'Введите наименование лота');
         // проверка описания
-        $this->checkInput($data['description'], 'description', 'Введите описание лота');
+        $this->checkInput($this->data['description'], 'description', 'Введите описание лота');
         //проверка поля начальной стоимости
-        $this->checkNumberInput($data['start_price'], 'start_price');
+        $this->checkNumberInput($this->data['start_price'], 'start_price');
         //проверка поля шага ставки
-        $this->checkNumberInput($data['step_rate'], 'step_rate');
+        $this->checkNumberInput($this->data['step_rate'], 'step_rate');
         // проверка даты
-        $this->checkDate($data['date']);
+        $this->checkDate($this->data['date']);
         // проверка выбранной категории
-        $this->checkCategory($data['category']);
+        $this->checkCategory($this->data['category']);
         // проверка загружаемой фотографии
-        $this->checkImage($image, 'img/lots');
-    }
+        $this->checkImage($this->data['image'], 'img/lots');
 
-    /**
-     * Проверяет введенную дату
-     * @param $value
-     */
-    private function checkDate($value) {
-        if(!empty($value) && preg_match(self::REG_EXP, $value)) {
-            $this->data['completion_date'] = $value;
-        } else {
-            $this->errors['date'] = 'Введите дату в формате "дд.мм.гггг"';
-        }
-    }
-
-    /**
-     * Проверяет выбранную категорию
-     * @param $name
-     */
-    private function checkCategory($name) {
-        if(!empty($name)) {
-            $id = Category::getCategoryId($name);
-            if(!empty($id)) {
-                $this->data['category_id'] = $id;
-            }
-        } else {
-            $this->errors['category'] = 'Выберете категорию';
-        }
-
+        return $this->checkValid();
     }
 }
