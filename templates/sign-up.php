@@ -3,7 +3,7 @@
         <ul class="nav__list container">
             <?php foreach ($data['product_category'] as $item): ?>
                 <li class="nav__item">
-                    <a href="all-lots.html"><?= $item['name'] ?></a>
+                    <a href="./?category_id=<?= $item['id'] ?>"><?= $item['name'] ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>
@@ -26,10 +26,10 @@
             <input id="name" type="text" name="name" placeholder="Введите имя" required>
             <span class="form__error"><?= $data['errors']['name'] ?></span>
         </div>
-        <div class="form__item <?= $data['errors']['message']? 'form__item--invalid': '' ?>">
-            <label for="message">Контактные данные*</label>
-            <textarea id="message" name="message" placeholder="Напишите как с вами связаться" required></textarea>
-            <span class="form__error"><?= $data['errors']['message'] ?></span>
+        <div class="form__item <?= $data['errors']['contacts']? 'form__item--invalid': '' ?>">
+            <label for="contacts">Контактные данные*</label>
+            <textarea id="contacts" name="contacts" placeholder="Напишите как с вами связаться" required></textarea>
+            <span class="form__error"><?= $data['errors']['contacts'] ?></span>
         </div>
         <div class="form__item form__item--file form__item--last <?= $data['errors']['image']? 'form__item--invalid': '' ?>">
             <label>Изображение</label>

@@ -30,16 +30,13 @@ class User {
     }
 
     /**
-     * Возвращает информацию о текущем залогиненном пользователе
+     * Возвращает информацию о пользователе по email
+     * @param $email
      * @return array
      */
-    public static function getUserData() {
-        if(self::checkAuthenticate()){
-            return DataBase::getInstance() -> getData(self::$sql_for_search_user_email,
-                ['email' => $_SESSION['user']['$email']])[0];
-        }
-
-        return [];
+    public static function getUserData($email) {
+        return DataBase::getInstance() -> getData(self::$sql_for_search_user_email,
+            ['email' => $email])[0];
     }
 
     /**
@@ -59,18 +56,21 @@ class User {
         // ищем пользователя по email
         $user = DataBase::getInstance() -> getData(self::$sql_for_search_user_email,
             ['email' => $email])[0];
+        // информация об ошибках
+        $error = [];
 
         if (!empty($user)) {
             // если пользователь найден, проверяем пароль
             if (password_verify($password, $user['password'])) {
                 $_SESSION['user'] = $user;
-                return $user;
             } else {
-                return ['password' => 'Неверный пароль'];
+                $error['password'] = 'Неверный пароль';
             }
         } else {
-            return ['email' => 'Пользователь с таким e-mail не найден'];
+            $error['email'] = 'Пользователь с таким e-mail не найден';
         }
+
+        return $error;
     }
 
     /**
@@ -80,7 +80,7 @@ class User {
      */
     public static function addNewUser($data) {
         return DataBase::getInstance() ->
-            insertData(self::$sql_for_new_user, $data) !== false;
+            insertData(self::$sql_for_new_user, $data);
     }
 
 }

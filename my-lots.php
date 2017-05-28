@@ -4,23 +4,24 @@ ini_set('display_errors', 0);
 
 // функция подключения шаблонов
 require_once 'functions.php';
+// класс для работы с категориями
+require_once 'classes/Category.php';
+// класс для работы с пользователем
+require_once 'classes/User.php';
+// класс для работы со ставками
+require_once 'classes/Rate.php';
 
 // проверка авторизации
 checkAuthorization();
 
 // проверяем подключение к базе
-$resource = checkConnectToDatabase();
+checkConnectToDatabase();
 
 // категории товаров
-$sql_for_category = 'SELECT * FROM category';
-$data['product_category'] = getData($resource, $sql_for_category);
+$data['product_category'] = Category::getAllCategories();
 
 // данные для шаблона
-$sql_for_my_rates = 'SELECT rates.price, rates.date, rates.lot_id, lots.image_url AS image, lots.name AS name 
-                        FROM rates JOIN lots ON rates.lot_id=lots.id WHERE rates.user_id=?';
-$data['my_rates'] = getData($resource, $sql_for_my_rates, ['user_id' => $_SESSION['user']['id']]);
-
-
+$data['my_rates'] = Rate::getUserRates($_SESSION['user']['id']);
 ?>
 <!DOCTYPE html>
 <html lang="ru">

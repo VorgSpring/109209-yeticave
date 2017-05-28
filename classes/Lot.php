@@ -9,7 +9,7 @@ class Lot {
      * @var string
      */
     private static $sql_for_lot = 'SELECT lots.name, lots.id, lots.image_url, lots.start_price, 
-          lots.completion_date, lots.description,category.name AS category FROM lots 
+          lots.completion_date, lots.description, category.name AS category FROM lots 
                 JOIN category ON lots.category_id = category.id 
                       WHERE lots.id=?';
 
@@ -42,7 +42,22 @@ class Lot {
      * @return array
      */
     public static function getLot($id) {
-        return DataBase::getInstance() -> getData(self::$sql_for_lot, $id);
+        return DataBase::getInstance() -> getData(self::$sql_for_lot, ['lots.id' => $id])[0];
+    }
+
+    /**
+     * Возвращает информацию о лоте по имени
+     * @param $name
+     * @return array
+     */
+    public static function getLotByName($name) {
+        // формируем запрос
+        $sql_for_lot_by_name = "SELECT lots.name, lots.id, lots.image_url, lots.start_price, 
+          lots.completion_date, lots.description, category.name AS category FROM lots 
+                JOIN category ON lots.category_id = category.id 
+                      WHERE lots.name LIKE '%$name%'";
+
+        return DataBase::getInstance()->getData($sql_for_lot_by_name);
     }
 
     /**
@@ -51,7 +66,7 @@ class Lot {
      * @return array
      */
     public static function getLots($id) {
-        return DataBase::getInstance() -> getData(self::$sql_for_lots, $id);
+        return DataBase::getInstance() -> getData(self::$sql_for_lots, ['category.id' => $id]);
     }
 
     /**
@@ -67,17 +82,16 @@ class Lot {
      * @param $data
      * @return bool|number
      */
-    public static function addNewLot($data) {
+    public static function createNewLot($data) {
         return DataBase::getInstance() -> insertData(self::$sql_for_new_lot, $data);
     }
 
     /**
      * Изменяет начальную стоимость лота
-     * @param $new_price
-     * @param $id
+     * @param $data
      * @return bool|int
      */
-    public static function setNewPrice($new_price, $id) {
-        return DataBase::getInstance() -> updateData('lots', ['start_price' => $new_price], ['id' => $id]);
+    public static function setNewPrice($data) {
+        return DataBase::getInstance() -> updateData('lots', ['start_price' => $data['price']], ['id' => $data['lot_id']]);
     }
 }
