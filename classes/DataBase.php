@@ -13,13 +13,13 @@ class DataBase {
 
     /**
      * Информация о последней ошибке
-     * @var string
+     * @var string|null
      */
-    private $error;
+    private $error = null;
 
     /**
      * Объект соединения с базой данных
-     * @var null
+     * @var DataBase|null
      */
     private static $instance = null;
 
@@ -115,6 +115,7 @@ class DataBase {
 
         // объединяем все массивы значений
         $update_data = array_merge($update_value, $requirement_value);
+       //print_r($update_data);
 
         // формируем запрос
         $request = "UPDATE $table SET $update_fields WHERE $requirement_fields";

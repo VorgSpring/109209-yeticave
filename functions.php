@@ -1,6 +1,10 @@
 <?php
 // Создает подготовленное выражение на основе готового SQL запроса и переданных данных
 require_once 'mysql_helper.php';
+// класс для работы с базой данных
+require_once 'classes/DataBase.php';
+// класс для работы с пользователем
+require_once 'classes/User.php';
 
 /**
  * Количество часов в одном дне
@@ -70,23 +74,6 @@ function lotTimeRemaining() {
 }
 
 /**
- * Ищет пользователя с переданным $email в массиве $users
- * @param {String} $email
- * @param {Array} $users
- * @return null|array
- */
-function searchUserByEmail($email, $users) {
-    $result = null;
-    foreach ($users as $user) {
-        if ($user['email'] == $email) {
-            $result = $user;
-            break;
-        }
-    }
-    return $result;
-}
-
-/**
  * Возвращает время в относительном формате
  * @param $time
  * @return string
@@ -107,31 +94,10 @@ function formatTime($time) {
 }
 
 /**
- * Добавляет новую cookie для новой ставки
- * @param $value
- * @param $id
- */
-function setRateCookie($value, $id) {
-    $my_rates = json_decode($_COOKIE['my_rates'], true);
-
-    $data = [
-        'image' => $value['image'],
-        'name' => $value['name'],
-        'cost' => $value['cost'],
-        'id' => $id,
-        'time' => time()
-    ];
-
-    $my_rates[$id] = $data;
-
-    setcookie('my_rates', json_encode($my_rates), strtotime("tomorrow midnight"));
-}
-
-/**
  * Проверка авторизации
  */
 function checkAuthorization() {
-    if (!isset($_SESSION['user'])) {
+    if(!User::checkAuthenticate()) {
         header('HTTP/1.0 403 Forbiden');
         header('Location: /login.php');
     }
@@ -142,107 +108,8 @@ function checkAuthorization() {
  * @return object
  */
 function checkConnectToDatabase() {
-    $resource = mysqli_connect('localhost', 'root', '', 'yeticave');
-
-    if (!$resource) {
+    if(DataBase::getInstance()->getLastError() !== null) {
         header('HTTP/1.0 500 Internal Server Error');
         header('Location: /500.html');
-    } else {
-        return $resource;
-    }
-}
-
-/**
- * Функция для получения данных
- * @param $resource
- * @param $request
- * @param array $data
- * @return array
- */
-function getData($resource, $request, $data = []) {
-    // получаем подготовленное выражение
-    $prepared_statement = db_get_prepare_stmt($resource, $request, $data);
-
-    // выполняем запрос
-    if(mysqli_stmt_execute($prepared_statement)) {
-        $result = mysqli_stmt_get_result($prepared_statement);
-        return mysqli_fetch_all($result, MYSQLI_ASSOC);
-    } else {
-        return [];
-    }
-}
-
-/**
- * Функция для вставки данных
- * @param $resource
- * @param $request
- * @param $data
- * @return bool|number
- */
-function insertData($resource, $request, $data) {
-    // получаем подготовленное выражение
-    $prepared_statement = db_get_prepare_stmt($resource, $request, $data);
-
-    // выполняем запрос
-    if(mysqli_stmt_execute($prepared_statement)) {
-        return mysqli_stmt_insert_id($prepared_statement);
-    } else {
-        return false;
-    }
-}
-
-/**
- * Форматирует ассоциативный массив
- * переобразуя все ключи в строку, а значения в простой массив
- * @param $array
- * @return array
- */
-function getFormatArray($array) {
-    $fields = '';
-    $value = [];
-
-    foreach ($array as $key => $value) {
-        $fields .= "$key=?, ";
-        $value[] = $value;
-    };
-
-    return [$fields => $value];
-}
-
-/**
- * Функция для обновления данных
- * @param $resource
- * @param $table
- * @param $data
- * @param $requirement
- * @return bool|int
- */
-function updateData($resource, $table, $data, $requirement) {
-    // форматируем массив данных
-    $format_data = getFormatArray($data);
-    // получаем поля для выражения
-    $update_fields = array_keys($format_data)[0];
-    // получаем значения для выражения
-    $update_value = array_values($format_data)[0];
-
-    // аналогично форматируем массив условий
-    $requirement_data = getFormatArray($requirement);
-    $requirement_fields = array_keys($requirement_data)[0];
-    $requirement_value = array_values($requirement_data)[0];
-
-    // объединяем все массивы значений
-    $update_data = array_merge($update_value, $requirement_value);
-
-    // формируем запрос
-    $request = "UPDATE $table SET $update_fields WHERE $requirement_fields";
-
-    // получаем подготовленное выражение
-    $prepared_statement = db_get_prepare_stmt($resource, $request, $update_data);
-
-    // выполняем запрос
-    if (mysqli_stmt_execute($prepared_statement)) {
-        return mysqli_stmt_affected_rows($prepared_statement);
-    } else {
-        return false;
     }
 }

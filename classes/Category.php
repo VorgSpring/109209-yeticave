@@ -31,6 +31,6 @@ class Category {
      * @return array
      */
     public static function getCategoryId($name) {
-        return DataBase::getInstance() -> getData(self::$sql_for_id_category, $name);
+        return DataBase::getInstance() -> getData(self::$sql_for_id_category, ['name' => $name]);
     }
 }

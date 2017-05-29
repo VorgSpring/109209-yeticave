@@ -4,9 +4,9 @@
         <a <?= (!$data['is_start_page'])? 'href="./"': '' ?> class="main-header__logo">
             <img src="img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
         </a>
-        <form class="main-header__search" method="get" action="https://echo.htmlacademy.ru">
+        <form class="main-header__search" method="get" action="/">
             <input type="search" name="search" placeholder="Поиск лота">
-            <input class="main-header__search-btn" type="submit" name="find" value="Найти">
+            <input class="main-header__search-btn" type="submit" value="Найти">
         </form>
 
         <?php if (isset($_SESSION['user'])): ?>
