@@ -90,10 +90,6 @@ class LotRecord extends BaseRecord {
         $this->author_id = $data['author_id'];
         $this->winner_id = $data['winner_id'];
         $this->category_id = $data['category_id'];
-
-        // заносим объект в базу данных
-        //$this->insert();
-
     }
 
     /**

@@ -1,3 +1,9 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+
+class CategoryFinder extends BaseFinder {
+    private $table_name = 'category';
+
+    public function __construct(DataBase $dbInstance){
+        parent::__construct($dbInstance, $this->table_name);
+    }
+}

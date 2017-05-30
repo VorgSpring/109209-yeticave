@@ -29,25 +29,52 @@ abstract class BaseFinder {
     /**
      * Находит и возвращает один объект-запись по её первичному ключу
      * @param $id
+     * @param $className
      * @return array
      */
-    public function findById($id) {
+    public function findById($id, $className) {
         $sql = "SELECT * FROM $this->table_name WHERE id=?";
-        return $this->dbInstance->getData($sql, ['id' => $id]);
+        $item = $this->dbInstance->getData($sql, ['id' => $id]);
+        return  new $className($item);
     }
 
     /**
      * Находит и возвращает список из объектов-записей по условию из ассоциативного массива
      * @param $where
+     * @param $className
      * @return array
      */
-    public function findAllBy($where) {
+    public function findAllBy($where, $className) {
+        $result = [];
         $data = getFormatArray($where);
         $fields = substr(array_keys($data)[0], 0, -2);
         $values = array_values($data)[0];
 
         $sql = "SELECT * FROM $this->table_name WHERE $fields";
 
-        return $this->dbInstance->getData($sql, $values);
+        $items = $this->dbInstance->getData($sql, $values);
+
+        foreach ($items as $item) {
+            array_push($result, new $className($item));
+        }
+        return $result;
+    }
+
+    /**
+     * Находит и возвращает список из всех объектов-записей
+     * @param $className
+     * @return array
+     */
+    public function findAll($className) {
+        $result = [];
+
+        $sql = "SELECT * FROM $this->table_name";
+
+        $items = $this->dbInstance->getData($sql);
+
+        foreach ($items as $item) {
+            array_push($result, new $className($item));
+        }
+        return $result;
     }
 }

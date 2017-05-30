@@ -20,9 +20,6 @@ class CategoryRecord extends BaseRecord {
         parent::__construct($dbInstance, 'category');
         // определяем поля объекта
         $this->name = $name;
-
-        // заносим объект в базу данных
-        //$this->insert();
     }
 
     /**

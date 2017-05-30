@@ -1,3 +1,8 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+class LotFinder extends BaseFinder {
+    private $table_name = 'lots';
+
+    public function __construct(DataBase $dbInstance){
+        parent::__construct($dbInstance, $this->table_name);
+    }
+}

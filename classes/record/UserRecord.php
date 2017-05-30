@@ -55,9 +55,6 @@ class UserRecord extends BaseRecord {
         $this->password = password_hash($data['password'], PASSWORD_DEFAULT);
         $this->avatar = $data['avatar'];
         $this->contacts = $data['contact'];
-
-        // заносим объект в базу данных
-        //$this->insert();
     }
 
     /**

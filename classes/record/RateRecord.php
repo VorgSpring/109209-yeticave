@@ -41,9 +41,6 @@ class RateRecord extends BaseRecord {
         $this->price = $data['price'];
         $this->user_id = $data['user_id'];
         $this->lot_id = $data['lot_id'];
-
-        // заносим объект в базу данных
-        //$this->insert();
     }
 
     /**
