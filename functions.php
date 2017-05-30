@@ -113,3 +113,21 @@ function checkConnectToDatabase() {
         header('Location: /500.html');
     }
 }
+
+/**
+ * Форматирует ассоциативный массив
+ * переобразуя все ключи в строку, а значения в простой массив
+ * @param $array
+ * @return array
+ */
+function getFormatArray($array) {
+    $fields = '';
+    $values = [];
+
+    foreach ($array as $key => $value) {
+        $fields .= "$key=?, ";
+        $values[] = $value;
+    };
+
+    return [$fields => $values];
+}

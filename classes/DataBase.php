@@ -1,4 +1,5 @@
 <?php
+require_once '../functions.php';
 
 /**
  * Класс для работы с базой данных
@@ -102,14 +103,14 @@ class DataBase {
      */
     public function updateData($table, $data, $requirement) {
         // форматируем массив данных
-        $format_data = $this -> getFormatArray($data);
+        $format_data = getFormatArray($data);
         // получаем поля для выражения
         $update_fields = substr(array_keys($format_data)[0], 0, -2);
         // получаем значения для выражения
         $update_value = array_values($format_data)[0];
 
         // аналогично форматируем массив условий
-        $requirement_data = $this -> getFormatArray($requirement);
+        $requirement_data = getFormatArray($requirement);
         $requirement_fields = substr(array_keys($requirement_data)[0], 0, -2);
         $requirement_value = array_values($requirement_data)[0];
 
@@ -129,6 +130,23 @@ class DataBase {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Функция для удаления данных
+     * @param $table
+     * @param $data
+     * @return bool
+     */
+    public function deleteData($table, $data) {
+        $data_field = array_keys($data)[0];
+        // формируем запрос
+        $request = "DELETE FROM $table WHERE $data_field=?";
+        // получаем подготовленное выражение
+        $prepared_statement = $this -> db_get_prepare_stmt($this -> resource, $request, $data);
+        // выполняем запрос
+        return mysqli_stmt_execute($prepared_statement);
+
     }
 
     /**
@@ -173,23 +191,5 @@ class DataBase {
         }
 
         return $stmt;
-    }
-
-    /**
-     * Форматирует ассоциативный массив
-     * переобразуя все ключи в строку, а значения в простой массив
-     * @param $array
-     * @return array
-     */
-    private function getFormatArray($array) {
-        $fields = '';
-        $values = [];
-
-        foreach ($array as $key => $value) {
-            $fields .= "$key=?, ";
-            $values[] = $value;
-        };
-
-        return [$fields => $values];
     }
 }
