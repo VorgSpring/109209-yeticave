@@ -49,12 +49,16 @@ abstract class BaseRecord {
     }
 
     /**
-     * Получить значение и з поля
+     * Получить значение из поля
      * @param $property
      * @return mixed
      */
     public function __get($property) {
-        return $this[$property];
+        if (property_exists($this[$property])) {
+            return $this[$property]
+        } else {
+            return null;   
+        }
     }
 
     /**
