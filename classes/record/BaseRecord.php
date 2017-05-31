@@ -54,7 +54,11 @@ abstract class BaseRecord {
      * @return mixed
      */
     public function __get($property) {
-        return $this[$property];
+        if (isset($this[$property])) {
+            return $this[$property];
+        } else {
+            return null;
+        }
     }
 
     /**
